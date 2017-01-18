@@ -6,6 +6,7 @@ import { mount } from 'enzyme';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import Highcharts from 'highcharts/highstock';
+import * as ApiUtil from '../../../app/utils/ApiUtil';
 import { shell } from '../../mocks/electron';
 import { Overview } from '../../../app/components/bid/Overview';
 import player, { totwPlayer } from '../../mocks/player';
@@ -16,9 +17,6 @@ const mockStore = configureMockStore(middlewares);
 function setup(state, history = false) {
   const actions = {
     getMarketData: sinon.stub().returns(),
-    getWatchlist: sinon.spy(),
-    getTradepile: sinon.spy(),
-    getUnassigned: sinon.spy(),
     start: sinon.spy(),
     stop: sinon.spy()
   };
@@ -87,6 +85,11 @@ describe('components', () => {
     describe('Overview', () => {
       beforeEach(() => {
         sandbox = sinon.sandbox.create();
+        sandbox.stub(ApiUtil, 'getApi').returns({
+          getWatchlist: sandbox.stub().returns({ credits: 1000, auctionInfo: [] }),
+          getTradepile: sandbox.stub().returns({ credits: 1000, auctionInfo: [] }),
+          getUnassigned: sandbox.stub().returns({ credits: 1000, auctionInfo: [] }),
+        });
       });
       afterEach(() => {
         sandbox.restore();

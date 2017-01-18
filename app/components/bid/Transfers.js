@@ -23,7 +23,7 @@ export class Transfers extends Component {
         }
       });
     }, 1000);
-    if (!this.props.bidding) {
+    if (this.props && !this.props.bidding) {
       this.props.getWatchlist(this.props.email);
       this.props.getTradepile(this.props.email);
       this.props.getUnassigned(this.props.email);
