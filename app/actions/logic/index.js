@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import Fut from 'fut-promise';
+import { getApi } from '../../utils/ApiUtil';
 import * as bidActions from '../bid';
 
 export function bidCycle() {
@@ -30,8 +31,9 @@ export function bidCycle() {
       // refresh state every player
       state = getState();
 
-      // Setup API
+      // Setup API - resets RPM every cycle
       const settings = _.merge({}, state.settings, player.settings);
+      getApi(state.account.email, settings.rpm);
 
       // How many of this player is already listed
       // const listed = _.countBy(

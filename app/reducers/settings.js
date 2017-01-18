@@ -2,7 +2,7 @@ import _ from 'lodash';
 import * as types from '../actions/settingsTypes';
 
 const initialState = {
-  rpm: '15',
+  rpm: '10',
   minCredits: '1000',
   maxCard: '10',
   snipeOnly: false,

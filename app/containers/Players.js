@@ -1,5 +1,4 @@
 import React, { PropTypes, Component } from 'react';
-import { shell } from 'electron';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
@@ -7,7 +6,6 @@ import _ from 'lodash';
 import classNames from 'classnames';
 import ConnectedPlayerListItem from '../components/player/PlayerListItem';
 import ConnectedHeader from '../components/Header';
-import metrics from '../utils/MetricsUtil';
 import * as PlayerActions from '../actions/player';
 import * as BidActions from '../actions/bid';
 
@@ -34,13 +32,6 @@ export class Players extends Component {
   handleClickClearList() {
     this.props.clear();
     this.context.router.push('/players');
-  }
-
-  handleClickReportIssue() {
-    metrics.track('Opened Issue Reporter', {
-      from: 'app'
-    });
-    shell.openExternal('https://github.com/hunterjm/fifa-autobuyer/issues');
   }
 
   handleToggleBidding() {
@@ -80,11 +71,7 @@ export class Players extends Component {
                 {
                   this.props.location.pathname === '/players'
                   ?
-                    <Link to="/settings">
-                      <span className="btn btn-new btn-action has-icon btn-hollow">
-                        <span className="icon icon-preferences" />Settings
-                      </span>
-                    </Link>
+                    null
                   :
                     <Link to="/players">
                       <span className="btn btn-new btn-action has-icon btn-hollow">
@@ -118,8 +105,8 @@ export class Players extends Component {
               <span className="btn-sidebar btn-database" onClick={this.handleClickClearList.bind(this)}>
                 <span className="text">Clear List</span>
               </span>
-              <span className="btn-sidebar btn-feedback" onClick={this.handleClickReportIssue}>
-                <span className="icon icon-feedback" />
+              <span className="btn-sidebar btn-preferences" onClick={() => { this.context.router.push('/settings'); }}>
+                <span className="icon icon-preferences" />
               </span>
               {
                 this.props.bidding

@@ -7,7 +7,7 @@ describe('reducers', () => {
   describe('settings', () => {
     it('should handle initial state', () => {
       expect(settings(undefined, {})).to.eql({
-        rpm: '15',
+        rpm: '10',
         minCredits: '1000',
         maxCard: '10',
         snipeOnly: false,
@@ -20,9 +20,9 @@ describe('reducers', () => {
     });
 
     it('should handle SET_SETTING', () => {
-      const value = '10';
+      const value = '15';
       expect(
-        settings({ rpm: '15' }, { type: types.SET_SETTING, key: 'rpm', value })
+        settings({ rpm: '10' }, { type: types.SET_SETTING, key: 'rpm', value })
       ).to.eql({ rpm: value });
     });
 
