@@ -103,19 +103,23 @@ export class Account extends Component {
       if (this.next !== undefined) {
         this.next(this.props.account.code);
       } else {
-        this.props.login(
-          this.props.account,
-          // Two factor callback
-          () => {
-            this.setState({ twoFactor: true, loading: false });
-            metrics.track('Two Factor Authentication Required');
-            return new Promise(resolve => {
-              this.next = resolve;
-            });
-          },
-          // Captcha callback
-          () => {}
-        );
+        try {
+          await this.props.login(
+            this.props.account,
+            // Two factor callback
+            () => {
+              this.setState({ twoFactor: true, loading: false });
+              metrics.track('Two Factor Authentication Required');
+              return new Promise(resolve => {
+                this.next = resolve;
+              });
+            },
+            // Captcha callback
+            () => {}
+          );
+        } catch (e) {
+          this.setState({ loading: false, errors: { detail: e.message } });
+        }
       }
     }
   }

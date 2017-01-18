@@ -1,13 +1,12 @@
 import React, { PropTypes, Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import Promise from 'bluebird';
 import classNames from 'classnames';
 import _ from 'lodash';
 import PlayerCard from './SmallPlayerCard';
 import * as PlayerActions from '../../actions/player';
 
-let searchPromise = null;
+let searchTimeout;
 
 export class PlayerSearch extends Component {
   constructor(props) {
@@ -43,32 +42,24 @@ export class PlayerSearch extends Component {
 
   componentWillUnmount() {
     /* istanbul ignore if */
-    if (searchPromise) {
-      searchPromise.cancel();
-      searchPromise = null;
+    if (searchTimeout) {
+      window.clearTimeout(searchTimeout);
+      searchTimeout = undefined;
     }
   }
 
   search(query, page = 1) {
     /* istanbul ignore if */
-    if (searchPromise) {
-      searchPromise.cancel();
-      searchPromise = null;
+    if (searchTimeout) {
+      window.clearTimeout(searchTimeout);
+      searchTimeout = undefined;
     }
 
     if (query !== '') {
       this.setState({ loading: true });
-      // Search immediately for tests
-      /* istanbul ignore else */
-      if (process.env.NODE_ENV === 'test') {
+      searchTimeout = window.setTimeout(() => {
         this.props.search(query, page);
-      } else {
-        searchPromise = Promise.delay(500).then(() => {
-          searchPromise = null;
-          this.props.search(query, page);
-        }).catch(() => {});
-        return searchPromise;
-      }
+      }, 500);
     }
   }
 
@@ -78,7 +69,7 @@ export class PlayerSearch extends Component {
       return;
     }
     this.setState({ query });
-    this.search(query);
+    return this.search(query);
   }
 
   handlePage(page) {

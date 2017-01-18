@@ -8,10 +8,14 @@ import rootReducer from '../reducers';
 
 import * as accountActions from '../actions/account';
 import * as playerActions from '../actions/player';
+import * as settingsActions from '../actions/settings';
+import * as bidActions from '../actions/bid';
 
 const actionCreators = {
   ...accountActions,
   ...playerActions,
+  ...settingsActions,
+  ...bidActions,
   push,
 };
 

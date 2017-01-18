@@ -1,6 +1,6 @@
 import React from 'react';
 import { expect } from 'chai';
-import { spy, stub } from 'sinon';
+import sinon from 'sinon';
 import { mount } from 'enzyme';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
@@ -12,21 +12,21 @@ const mockStore = configureMockStore(middlewares);
 
 function setup(initialState = {}) {
   const actions = {
-    search: spy()
+    search: sinon.spy()
   };
   const store = mockStore({});
   const context = {
     context: {
       store,
       router: {
-        push: spy(),
-        replace: spy(),
-        go: spy(),
-        goBack: spy(),
-        goForward: spy(),
-        createHref: spy(),
-        setRouteLeaveHook: spy(),
-        isActive: stub().returns(true)
+        push: sinon.spy(),
+        replace: sinon.spy(),
+        go: sinon.spy(),
+        goBack: sinon.spy(),
+        goForward: sinon.spy(),
+        createHref: sinon.spy(),
+        setRouteLeaveHook: sinon.spy(),
+        isActive: sinon.stub().returns(true)
       }
     },
     childContextTypes: {
@@ -43,9 +43,16 @@ function setup(initialState = {}) {
   };
 }
 
+let clock;
 describe('components', () => {
   describe('player', () => {
     describe('PlayerSearch', () => {
+      beforeEach(() => {
+        clock = sinon.useFakeTimers();
+      });
+      afterEach(() => {
+        clock.restore();
+      });
       it('should be focused on search input', () => {
         const { search } = setup();
         expect(search.node).to.equal(document.activeElement);
@@ -55,10 +62,13 @@ describe('components', () => {
         const { search, actions } = setup();
         // This should return a result
         search.simulate('change', { target: { value: 'mes' } });
+        clock.tick(500);
         // Calling it again should do nothing
         search.simulate('change', { target: { value: 'mes' } });
+        clock.tick(500);
         // Searching for nothing, does nothing
         search.simulate('change', { target: { value: '' } });
+        clock.tick(500);
         expect(actions.search.calledOnce).to.be.true;
       });
 
@@ -69,6 +79,11 @@ describe('components', () => {
         const pages = component.find('.pagination').children();
         expect(pages).to.have.length(6);
         pages.at(2).find('a').simulate('click');
+        // Nothing until timeout complete
+        expect(actions.search.called).to.be.false;
+        // Tick timeout clock
+        clock.tick(500);
+        // Search should be called
         expect(actions.search.calledOnce).to.be.true;
         component.setProps({ results: searchResultsPg3 });
       });

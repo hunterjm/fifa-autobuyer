@@ -4,9 +4,11 @@
  * https://webpack.github.io/docs/hot-module-replacement-with-webpack.html
  */
 
+import path from 'path';
 import webpack from 'webpack';
 import validate from 'webpack-validator';
 import merge from 'webpack-merge';
+import formatter from 'eslint-formatter-pretty';
 import baseConfig from './webpack.config.base';
 
 const port = process.env.PORT || 3000;
@@ -27,13 +29,33 @@ export default validate(merge(baseConfig, {
     publicPath: `http://localhost:${port}/dist/`
   },
 
+  resolve: {
+    fallback: path.join(__dirname, 'node_modules')
+  },
+
+  resolveLoader: { fallback: path.join(__dirname, 'node_modules') },
+
   module: {
     loaders: [
       {
         test: /\.less$/,
         loader: 'style!css!autoprefixer!less'
-      }
+      },
+
+      // Load images
+      { test: /\.jpg/, loader: 'url-loader?limit=10000&mimetype=image/jpg' },
+      { test: /\.gif/, loader: 'url-loader?limit=10000&mimetype=image/gif' },
+      { test: /\.png/, loader: 'url-loader?limit=10000&mimetype=image/png' },
+      { test: /\.svg/, loader: 'url-loader?limit=10000&mimetype=image/svg' },
+
+      // Load fonts
+      { test: /\.woff(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: 'url-loader?limit=10000&mimetype=application/font-woff' },
+      { test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: 'file-loader' },
     ]
+  },
+
+  eslint: {
+    formatter
   },
 
   plugins: [

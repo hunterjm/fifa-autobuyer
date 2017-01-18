@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import { remote } from 'electron';
 import React, { Component, PropTypes } from 'react';
 import classNames from 'classnames';
@@ -70,9 +71,7 @@ export class Header extends Component {
   }
   renderLogo() {
     return (
-      <div className="logo">
-        <RetinaImage src="images/logo.png" />
-      </div>
+      <div className="logo">17</div>
     );
   }
   renderWindowButtons() {
@@ -127,6 +126,7 @@ export class Header extends Component {
           </div>
         </div>
         <div className="right-header">
+          <div style={{ padding: '0.9rem 1rem 0 1rem' }}>{this.props.updates.message}</div>
           {util.isWindows() ? this.renderWindowButtons() : this.renderLogo()}
         </div>
       </div>
@@ -144,6 +144,7 @@ export class Header extends Component {
           {util.isWindows() ? null : this.renderWindowButtons()}
         </div>
         <div className="right-header">
+          <div style={{ padding: '0.9rem 1rem 0 1rem' }}>{this.props.updates.message}</div>
           {util.isWindows() ? this.renderWindowButtons() : null}
         </div>
       </div>
@@ -159,7 +160,10 @@ export class Header extends Component {
 
 Header.propTypes = {
   hideLogin: PropTypes.bool.isRequired,
-  credits: PropTypes.number
+  credits: PropTypes.number,
+  updates: PropTypes.shape({
+    message: PropTypes.string
+  })
 };
 
 Header.contextTypes = {
@@ -168,7 +172,13 @@ Header.contextTypes = {
 
 function mapStateToProps(state) {
   return {
-    credits: state.account.credits
+    credits: state.account.credits,
+    updates: _.get(state, 'app.updates', {
+      pending: false,
+      update: false,
+      downloaded: false,
+      message: '',
+    })
   };
 }
 

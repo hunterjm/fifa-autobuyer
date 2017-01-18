@@ -1,3 +1,4 @@
+import { ipcRenderer } from 'electron';
 import React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
@@ -22,6 +23,11 @@ setInterval(() => {
 const initialState = JSON.parse(localStorage.getItem('state')) || undefined;
 const store = configureStore(initialState);
 const history = syncHistoryWithStore(hashHistory, store);
+
+// Listen for messages from the auto updater
+ipcRenderer.on('updates', (event, updates) => {
+  store.dispatch({ type: 'app/set/updates', updates });
+});
 
 render(
   <Provider store={store}>

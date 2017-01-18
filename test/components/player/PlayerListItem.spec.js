@@ -1,9 +1,11 @@
+import _ from 'lodash';
 import React from 'react';
 import { expect } from 'chai';
 import { spy, stub } from 'sinon';
 import { shallow } from 'enzyme';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
+import numeral from 'numeral';
 import { PlayerListItem } from '../../../app/components/player/PlayerListItem';
 import player from '../../mocks/player';
 
@@ -61,7 +63,9 @@ describe('components', () => {
       it('should display player stats', () => {
         const { stats } = setup();
         expect(stats).to.have.length(1);
-        expect(stats.text()).to.equal(`${player.rating} | ${player.position}`);
+        expect(stats.text()).to.equal(
+          `${player.rating} | ${player.position}${numeral(_.get(player, 'price.buy')).format('0,0')}/${numeral(_.get(player, 'price.sell')).format('0,0')}/${numeral(_.get(player, 'price.bin')).format('0,0')}`
+        );
       });
 
       it('should handle mouse events', () => {

@@ -1,17 +1,27 @@
 import React from 'react';
 import { expect } from 'chai';
-import { spy } from 'sinon';
+import { spy, stub } from 'sinon';
 import { shallow } from 'enzyme';
 import { shell } from '../../mocks/electron';
-import PlayerDetailsHeader from '../../../app/components/player/PlayerDetailsHeader';
+import Header from '../../../app/components/player/Header';
 import player, { totwPlayer } from '../../mocks/player';
 
 function setup(totw = false) {
   const actions = {
     updatePrice: spy()
   };
+  const router = {
+    push: spy(),
+    replace: spy(),
+    go: spy(),
+    goBack: spy(),
+    goForward: spy(),
+    createHref: spy(),
+    setRouteLeaveHook: spy(),
+    isActive: stub().returns(true)
+  };
   const testPlayer = totw ? totwPlayer : player;
-  const component = shallow(<PlayerDetailsHeader player={testPlayer} {...actions} />);
+  const component = shallow(<Header player={testPlayer} router={router} {...actions} />);
   return {
     component,
     actions,
@@ -21,7 +31,7 @@ function setup(totw = false) {
 
 describe('components', () => {
   describe('player', () => {
-    describe('PlayerDetailsHeader', () => {
+    describe('Header', () => {
       it('should update price when update button is clicked', () => {
         const { actions, buttons } = setup();
         expect(buttons).to.have.length(2);

@@ -5,14 +5,15 @@
   display: flex;
   align-items: flex-start;
   justify-content: center;
+  overflow: auto;
 
   .preferences-content, .about-content {
     flex: 1 auto;
-    margin-top: 45px;
-    padding: 50px;
+    padding: 25px;
     max-width: 640px;
     display: flex;
     flex-direction: column;
+    overflow: auto;
 
     .title {
       margin-top: 40px;
@@ -34,6 +35,38 @@
       .option-value {
         flex: 1 auto;
         text-align: right;
+        color: @gray-normal;
+        font-weight: 300;
+        input[type="text"] {
+          border: 0;
+          border-bottom: 1px solid @gray-lightest;
+          color: @gray-normal;
+          font-weight: 300;
+          transition: all 0.25s;
+          width: 100px;
+          text-align: right;
+          &.error {
+            border-bottom: 1px solid @brand-negative;
+            &:focus {
+              border-bottom: 1px solid @brand-negative;
+            }
+          }
+          &:focus {
+            outline: 0;
+            border-bottom: 1px solid @brand-action;
+          }
+          &::-webkit-input-placeholder {
+            color: @gray-lighter;
+            font-weight: 400;
+          }
+        }
+        .error-message {
+          font-size: 12px;
+          margin-top: 5px;
+          margin-bottom: 0;
+          min-height: 17px;
+          color: @brand-negative;
+        }
       }
     }
   }

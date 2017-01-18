@@ -1,4 +1,5 @@
-import Fut from 'fut';
+import _ from 'lodash';
+import Fut from 'fut-promise';
 import request from 'request';
 import Promise from 'bluebird';
 import * as types from './playerTypes';
@@ -43,8 +44,8 @@ export function search(query, page = 1) {
 
 export function findPrice(id, buy = 0, num = 0) {
   return async (dispatch, getState) => {
-    const { email } = getState().account;
-    const api = getApi(email);
+    const { account, player, settings } = getState();
+    const api = getApi(account.email);
     if (api) {
       const filter = { definitionId: id, num: 50 };
       if (buy) {
@@ -63,10 +64,37 @@ export function findPrice(id, buy = 0, num = 0) {
           lowest = Fut.calculateNextLowerPrice(lowest);
         }
       }
-      if (buy === 0 || lowest < buy) {
+      if ((buy === 0 && prices.length) || lowest < buy) {
         await dispatch(findPrice(id, lowest, total));
       } else {
-        dispatch(setPrice(id, { lowest, total }));
+        const price = {
+          lowest,
+          total,
+          buy: _.get(player, `list.${id}.price.buy`, 0),
+          sell: _.get(player, `list.${id}.price.sell`, 0),
+          bin: _.get(player, `list.${id}.price.bin`, 0),
+          updated: Date.now(),
+        };
+        const mergedSettings = _.merge(settings, player.settings || {});
+        if (mergedSettings.autoUpdate) {
+          price.buy = Fut.calculateValidPrice(price.lowest * (settings.buy / 100));
+          price.sell = Fut.calculateValidPrice(price.lowest * (settings.sell / 100));
+          price.bin = Fut.calculateValidPrice(price.lowest * (settings.bin / 100));
+          // If there are more than 10, go one price point lower
+          if (price.total > 10) {
+            price.buy = Fut.calculateNextLowerPrice(price.buy);
+            price.sell = Fut.calculateNextLowerPrice(price.sell);
+            price.bin = Fut.calculateNextLowerPrice(price.bin);
+          }
+          // If we are trying to sell for the same as buy, increment sell
+          if (price.buy >= price.sell) {
+            price.sell = Fut.calculateNextHigherPrice(price.buy);
+          }
+          if (price.sell >= price.bin) {
+            price.bin = Fut.calculateNextHigherPrice(price.sell);
+          }
+        }
+        dispatch(setPrice(id, price));
       }
     }
   };
@@ -90,4 +118,8 @@ export function remove(player) {
     name: player.name
   });
   return { type: types.REMOVE_PLAYER, player };
+}
+
+export function clear() {
+  return { type: types.CLEAR_LIST };
 }

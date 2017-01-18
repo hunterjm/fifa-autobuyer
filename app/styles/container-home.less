@@ -96,6 +96,13 @@
           .text {
             color: white;
           }
+          .action {
+            color: white;
+            border-left: 1px solid rgba(255,255,255,0.1);
+            &:hover {
+              background-color: @gray-darkest;
+            }
+          }
         }
         height: 100%;
         .logs {
@@ -107,6 +114,24 @@
           padding: 1.2rem 1.2rem 5rem 1.2rem;
           overflow: auto;
           height: 100%;
+          .success {
+            color: @traffic-light-green;
+          }
+          .warn {
+            color: @traffic-light-yellow;
+          }
+          .error {
+            color: @traffic-light-red;
+            pre {
+              border: none;
+              border-left: 1px solid @traffic-light-red;
+              font-size: 10px;
+              padding: 0 0 0 1rem;
+              margin: 0 0 0 2rem;
+              color: @traffic-light-red;
+              background-color: @gray-darkest;
+            }
+          }
         }
         p {
           margin-bottom: 0px;
@@ -169,6 +194,55 @@
               text-overflow: ellipsis;
               white-space: nowrap;
               overflow: hidden;
+            }
+          }
+        }
+      }
+    }
+    .widget {
+      .widget-style();
+      margin: 1rem;
+      background-color: white;
+      .top-bar {
+        .widget-bar-style();
+        .menu {
+          display: flex;
+          flex: 0 auto;
+          height: 40px;
+          border-bottom: 1px solid @color-divider;
+          ul {
+            display: flex;
+            flex-direction: row;
+            width: 100%;
+            justify-content: flex-end;
+            a {
+              color: @gray-normal;
+              cursor: default;
+              outline: none;
+              &.active {
+                li {
+                  font-weight: 500;
+                  border-bottom: 3px solid @brand-primary;
+                  color: @gray-darkest;
+                }
+              }
+              &:hover {
+                text-decoration: none;
+                li {
+                  cursor: default;
+                  color: @gray-darkest;
+                }
+              }
+              &:focus {
+                text-decoration: none;
+              }
+            }
+            li {
+              transition: all 140ms;
+              vertical-align: middle;
+              padding: 0.9rem 1.6rem;
+              display: flex;
+              flex-direction: row;
             }
           }
         }

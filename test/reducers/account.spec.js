@@ -32,6 +32,14 @@ describe('reducers', () => {
       );
     });
 
+    it('should handle SET_PILESIZE', () => {
+      expect(
+        account({ pilesize: { watchlist: 30 } }, { type: types.SET_PILESIZE, key: 'tradepile', value: 30 })
+      ).to.eql(
+        { pilesize: { watchlist: 30, tradepile: 30 } }
+      );
+    });
+
     it('should handle unknown action type', () => {
       expect(
         account({ account: {} }, { type: 'unknown' })

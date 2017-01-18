@@ -1,4 +1,4 @@
-import Fut from 'fut';
+import Fut from 'fut-promise';
 import _ from 'lodash';
 
 const logins = [];
@@ -17,7 +17,6 @@ export function init(account, tfAuthHandler, captchaHandler, rpm = 15) {
     }
     const api = new Fut({
       ...account,
-      RPM: rpm,
       minDelay,
       captchaHandler,
       tfAuthHandler,
@@ -40,7 +39,6 @@ export function init(account, tfAuthHandler, captchaHandler, rpm = 15) {
 export function getApi(email, rpm) {
   const login = _.find(logins, { email });
   if (rpm !== undefined) {
-    login.api.options.RPM = rpm;
     if (rpm > 0) {
       login.api.options.minDelay = (60 / rpm) * 1000;
     } else {

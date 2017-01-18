@@ -13,6 +13,10 @@ export default ({ getState }) => next => action => {
     player: {
       // player list
       list: _.merge({}, _.get(state, 'player.list', {}))
+    },
+    settings: {
+      // global settings
+      ...state.settings
     }
   }));
 };

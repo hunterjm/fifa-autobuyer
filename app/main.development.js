@@ -2,14 +2,16 @@ import { app, BrowserWindow, Menu, shell } from 'electron';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
+import { initUpdater, checkForUpdates } from './updater';
 
 let menu;
 let template;
 let mainWindow = null;
 
-
 if (process.env.NODE_ENV === 'development') {
-  require('electron-debug')(); // eslint-disable-line global-require
+  require('electron-debug')(); // eslint-disable-line
+  const p = path.join(__dirname, '..', 'app', 'node_modules'); // eslint-disable-line
+  require('module').globalPaths.push(p); // eslint-disable-line
 }
 
 
@@ -56,11 +58,12 @@ app.on('ready', async () => {
     show: false,
   });
 
-  mainWindow.loadURL(`file://${__dirname}/app/app.html`);
+  mainWindow.loadURL(`file://${__dirname}/app.html`);
 
   mainWindow.webContents.on('did-finish-load', () => {
     mainWindow.show();
     mainWindow.focus();
+    initUpdater(mainWindow);
   });
 
   mainWindow.on('closed', () => {
@@ -88,6 +91,13 @@ app.on('ready', async () => {
       submenu: [{
         label: 'About FIFA 17 Autobuyer',
         selector: 'orderFrontStandardAboutPanel:'
+      }, {
+        type: 'separator'
+      }, {
+        label: 'Check for Updates...',
+        click() {
+          checkForUpdates();
+        }
       }, {
         type: 'separator'
       }, {
@@ -169,6 +179,12 @@ app.on('ready', async () => {
         accelerator: 'Ctrl+Command+F',
         click() {
           mainWindow.setFullScreen(!mainWindow.isFullScreen());
+        },
+      }, {
+        label: 'Toggle Developer Tools',
+        accelerator: 'Alt+Command+I',
+        click() {
+          mainWindow.toggleDevTools();
         }
       }]
     }, {
@@ -243,6 +259,12 @@ app.on('ready', async () => {
         click() {
           mainWindow.setFullScreen(!mainWindow.isFullScreen());
         }
+      }, {
+        label: 'Toggle &Developer Tools',
+        accelerator: 'Alt+Ctrl+I',
+        click() {
+          mainWindow.toggleDevTools();
+        }
       }]
     }, {
       label: 'Help',
@@ -255,6 +277,11 @@ app.on('ready', async () => {
         label: 'Search Issues',
         click() {
           shell.openExternal('https://github.com/hunterjm/fifa-autobuyer/issues');
+        }
+      }, {
+        label: 'Check for Updates',
+        click() {
+          checkForUpdates();
         }
       }]
     }];

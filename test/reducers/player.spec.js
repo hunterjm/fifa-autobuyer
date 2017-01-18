@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import { player } from '../../app/reducers/player';
 import * as types from '../../app/actions/playerTypes';
+import * as bidTypes from '../../app/actions/bidTypes';
 
 
 describe('reducers', () => {
@@ -58,6 +59,17 @@ describe('reducers', () => {
       expect(nextState.list).to.have.all.keys('123456');
     });
 
+    it('should handle CLEAR_LIST', () => {
+      const initialState = {
+        list: {
+          123456: { id: '123456' },
+          158023: { id: '158023' }
+        }
+      };
+      const nextState = player(initialState, { type: types.CLEAR_LIST });
+      expect(nextState.list).to.be.eql({});
+    });
+
     it('should handle SET_PRICE', () => {
       const initialState = {
         list: {
@@ -75,6 +87,65 @@ describe('reducers', () => {
         158023: {
           id: '158023',
           price: { lowest: 750000, total: 1 }
+        }
+      });
+    });
+
+    it('should handle UPDATE_PLAYER_HISTORY (add new history)', () => {
+      const initialState = {
+        list: {
+          123456: { id: '123456' },
+          158023: {
+            id: '158023',
+            history: { 123456789: { id: 123456789, bought: 1000, boughtAt: 987654321 } }
+          }
+        }
+      };
+      const nextState = player(initialState, {
+        type: bidTypes.UPDATE_PLAYER_HISTORY,
+        id: 158023,
+        history: { id: 987654321, bought: 1100, boughtAt: 9786756453 }
+      });
+      expect(nextState.list).to.eql({
+        123456: { id: '123456' },
+        158023: {
+          id: '158023',
+          history: {
+            123456789: { id: 123456789, bought: 1000, boughtAt: 987654321 },
+            987654321: { id: 987654321, bought: 1100, boughtAt: 9786756453 }
+          }
+        }
+      });
+    });
+
+    it('should handle UPDATE_PLAYER_HISTORY (modify existing)', () => {
+      const initialState = {
+        list: {
+          123456: { id: '123456' },
+          158023: {
+            id: '158023',
+            history: { 123456789: { id: 123456789, bought: 1000, boughtAt: 123456789 } }
+          }
+        }
+      };
+      const nextState = player(initialState, {
+        type: bidTypes.UPDATE_PLAYER_HISTORY,
+        id: 158023,
+        history: { id: 123456789, sold: 1200, soldAt: 987654321 }
+      });
+      expect(nextState.list).to.eql({
+        123456: { id: '123456' },
+        158023: {
+          id: '158023',
+          history: {
+            123456789: {
+              id: 123456789,
+              bought: 1000,
+              boughtAt: 123456789,
+              sold: 1200,
+              soldAt: 987654321
+            }
+          }
         }
       });
     });

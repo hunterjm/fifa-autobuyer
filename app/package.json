@@ -1,0 +1,15 @@
+{
+  "name": "fifa-autobuyer",
+  "productName": "FIFA Autobuyer",
+  "version": "0.1.0",
+  "description": "Autobuyer for FIFA 17 Ultimate Team",
+  "main": "./main.js",
+  "author": {
+    "name": "Jason Hunter",
+    "email": "hunterjm@gmail.com",
+    "url": "https://github.com/hunterjm"
+  },
+  "license": "MIT",
+  "dependencies": {
+  }
+}

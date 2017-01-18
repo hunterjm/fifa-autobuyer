@@ -19,6 +19,10 @@ export function account(state = initialState, action) {
       return _.merge({}, state, {
         credits: action.credits
       });
+    case types.SET_PILESIZE:
+      nextState = _.merge({}, state);
+      _.set(nextState, `pilesize.${action.key}`, action.value);
+      return nextState;
     default:
       return state;
   }

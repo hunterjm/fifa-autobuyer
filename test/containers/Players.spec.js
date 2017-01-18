@@ -4,7 +4,6 @@ import { spy } from 'sinon';
 import { mount } from 'enzyme';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import { shell } from '../mocks/electron';
 import player, { totwPlayer } from '../mocks/player';
 import { Players } from '../../app/containers/Players';
 import ConnectedPlayerListItem from '../../app/components/player/PlayerListItem';
@@ -39,8 +38,9 @@ function setup(initialState = { account: {} }, pathname = '/players') {
   );
   return {
     component,
+    context,
     database: component.find('.btn-database'),
-    feedback: component.find('.btn-feedback'),
+    settings: component.find('.btn-preferences'),
     addPlayer: component.find('.btn-new'),
     sidebar: component.find('.sidebar-containers'),
     button: component.find('.create'),
@@ -51,7 +51,8 @@ function setup(initialState = { account: {} }, pathname = '/players') {
 
 describe('containers', () => {
   describe('Players', () => {
-    it('should call handleClickPlayerDatabase when database icon clicked', () => {
+    it('should call handleClickClearList when Clear List icon clicked', () => {
+      const clear = spy();
       const { database } = setup({
         account: {
           credits: 1000
@@ -59,16 +60,16 @@ describe('containers', () => {
         player: {
           list: {},
           search: {}
-        }
+        },
+        clear
       });
       expect(database).to.have.length(1);
       database.simulate('click');
-      expect(shell.openExternal.calledOnce).to.be.true;
-      shell.openExternal.reset();
+      expect(clear.calledOnce).to.be.true;
     });
 
-    it('should call handleClickReportIssue when issue icon clicked', () => {
-      const { feedback } = setup({
+    it('should call context.router.push() when settings icon clicked', () => {
+      const { settings, context } = setup({
         account: {
           credits: 1000
         },
@@ -77,13 +78,12 @@ describe('containers', () => {
           search: {}
         }
       });
-      expect(feedback).to.have.length(1);
-      feedback.simulate('click');
-      expect(shell.openExternal.calledOnce).to.be.true;
-      shell.openExternal.reset();
+      expect(settings).to.have.length(1);
+      settings.simulate('click');
+      expect(context.context.router.push.calledOnce).to.be.true;
     });
 
-    it('should show settings button when on /players', () => {
+    it('should not show search button when on /players', () => {
       const { button } = setup({
         account: {
           credits: 1000
@@ -94,10 +94,10 @@ describe('containers', () => {
         }
       });
       expect(button).to.have.length(1);
-      expect(button.text()).to.equal('Settings');
+      expect(button.children().length).to.equal(0);
     });
 
-    it('should show search button when on /players/:id', () => {
+    it('should show search button when not on /players', () => {
       const { button } = setup({
         account: {
           credits: 1000

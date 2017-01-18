@@ -1,36 +1,29 @@
 sudo: false
-
 language: node_js
-
 os:
-  - linux
-  - osx
-
+- linux
+- osx
 node_js:
-  - 6.5.0
-
+- 6
 cache:
   directories:
-    - node_modules
-
+  - node_modules
 addons:
   apt:
     sources:
-      - ubuntu-toolchain-r-test
+    - ubuntu-toolchain-r-test
     packages:
-      - g++-4.8
-      - icnsutils
-      - graphicsmagick
-      - xz-utils
-      - xorriso
-
+    - g++-4.8
+    - icnsutils
+    - graphicsmagick
+    - xz-utils
+    - xorriso
 install:
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export CXX="g++-4.8"; fi
-  - npm install
-
+- if [[ "$TRAVIS_OS_NAME" = "linux" ]]; then export CXX="g++-4.8"; fi
+- npm install -g npm@latest
+- npm install
 script:
-  - npm run lint
-  - npm run test
-  - npm run coveralls
-  - npm run build
-  - npm run package
+- npm run lint
+- npm run test
+- npm run package
+after_success: if [[ "$TRAVIS_OS_NAME" = "linux" ]]; then npm run coverage; fi

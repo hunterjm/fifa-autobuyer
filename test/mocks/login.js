@@ -152,7 +152,12 @@ export function mockLogin() {
     reason: 'Already answered question.',
     token: '2833763939926856274'
   });
-  return scope;
+  const authScope = nock('https://utas.external.s3.fut.ea.com');
+  authScope.post(`/ut/game/fifa${version}/user/credits`)
+    .reply(200, { credits: 1000 });
+  authScope.post(`/ut/game/fifa${version}/clientdata/pileSize`)
+    .reply(200, { entries: [{ key: 2, value: 30 }, { key: 4, value: 30 }] });
+  return { scope, authScope };
 }
 
 export { mockLogin as default };

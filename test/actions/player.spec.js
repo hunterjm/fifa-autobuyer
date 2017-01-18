@@ -1,17 +1,17 @@
 /* eslint-disable no-unused-expressions */
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
+import sinon from 'sinon';
 import nock from 'nock';
 import { expect } from 'chai';
-import { mockLogin } from '../mocks/login';
-import { mockApi, PLAYER_ID } from '../mocks/api';
-import { init } from '../../app/utils/ApiUtil';
+import * as ApiUtil from '../../app/utils/ApiUtil';
 import * as actions from '../../app/actions/player';
 import * as types from '../../app/actions/playerTypes';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 
+let sandbox;
 describe('actions', () => {
   describe('player', () => {
     describe('creators', () => {
@@ -36,10 +36,19 @@ describe('actions', () => {
           { type: types.REMOVE_PLAYER, player }
         );
       });
+
+      it('clear should create CLEAR_LIST action', () => {
+        expect(actions.clear()).to.eql(
+          { type: types.CLEAR_LIST }
+        );
+      });
     });
     describe('async creators', () => {
+      beforeEach(() => {
+        sandbox = sinon.sandbox.create();
+      });
       afterEach(() => {
-        nock.cleanAll();
+        sandbox.restore();
       });
 
       it('should dispatch SAVE_SEARCH_RESULTS when search() is completed', () => {
@@ -79,21 +88,45 @@ describe('actions', () => {
           player: {
             search: {},
             list: {}
+          },
+          settings: {
+            autoUpdate: true,
+            buy: 90,
+            sell: 100,
+            bin: 110
           }
         };
 
+        const searchStub = sandbox.stub().returns({
+          auctionInfo: [{
+            buyNowPrice: 1000
+          }, {
+            buyNowPrice: 1100
+          }, {
+            buyNowPrice: 1100
+          }, {
+            buyNowPrice: 1200
+          }]
+        });
+        const apiStub = sandbox.stub(ApiUtil, 'getApi').returns({
+          search: searchStub
+        });
         const store = mockStore(initialState);
-        mockLogin();
-        mockApi();
 
-        const api = init(initialState.account, () => {}, () => {});
-        await api.login();
         // Dispatch with lowest already set to trigger SET_PRICE
-        await store.dispatch(actions.findPrice(PLAYER_ID));
-
-        expect(store.getActions()).to.deep.include(
-          { type: types.SET_PRICE, id: 158023, price: { lowest: 866000, total: 16 } }
-        );
+        await store.dispatch(actions.findPrice(1234));
+        expect(apiStub.calledTwice).to.eql(true);
+        expect(searchStub.calledTwice).to.eql(true);
+        expect(store.getActions()).to.eql([
+          actions.setPrice(1234, {
+            lowest: 1000,
+            total: 4,
+            buy: 900,
+            sell: 1000,
+            bin: 1100,
+            updated: Date.now()
+          })
+        ]);
       });
     });
   });

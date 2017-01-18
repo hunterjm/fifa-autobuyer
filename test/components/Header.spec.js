@@ -20,7 +20,7 @@ spy(Header.prototype, 'handleDocumentKeyUp');
 function setup(initialState) {
   const store = mockStore(initialState);
   const context = { context: { store, router: { push: spy() } } };
-  const component = shallow(<Header {...initialState} />, context);
+  const component = shallow(<Header {...initialState} updates={{ message: '' }} />, context);
   return {
     component,
     bordered: component.find('.bordered'),

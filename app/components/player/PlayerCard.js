@@ -6,6 +6,8 @@ class PlayerCard extends Component {
     let imgsrc;
     if (player.specialImages && player.specialImages.largeTOTWImgUrl) {
       imgsrc = player.specialImages.largeTOTWImgUrl;
+    } else if (player.isSpecialType) {
+      imgsrc = `https://fifa17.content.easports.com/fifa/fltOnlineAssets/CC8267B6-0817-4842-BB6A-A20F88B05418/2017/fut/playerheads/html5/single/120x120/p${player.id}.png`; // eslint-disable-line max-len
     } else {
       imgsrc = player.headshot.largeImgUrl;
     }
