@@ -86,6 +86,13 @@ export function findPrice(id, buy = 0, num = 0) {
             price.sell = Fut.calculateNextLowerPrice(price.sell);
             price.bin = Fut.calculateNextLowerPrice(price.bin);
           }
+          // If we are trying to sell for the same as buy, increment sell
+          if (price.buy >= price.sell) {
+            price.sell = Fut.calculateNextHigherPrice(price.buy);
+          }
+          if (price.sell >= price.bin) {
+            price.bin = Fut.calculateNextHigherPrice(price.sell);
+          }
         }
         dispatch(setPrice(id, price));
       }

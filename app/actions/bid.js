@@ -114,7 +114,7 @@ export function snipe(player, settings) {
         // };
         // Was this a success?
         if (tradeResult.tradeState === 'closed' && tradeResult.bidState === 'buyNow') {
-          dispatch(addMessage('log', `Bought for BIN (${trade.buyNowPrice}) on ${player.name}`));
+          dispatch(addMessage('success', `Bought for BIN (${trade.buyNowPrice}) on ${player.name}`));
           dispatch(setBINStatus(true));
           // Increment number of trades won
           if (state.bid.listed[player.id] === undefined) {
@@ -203,7 +203,7 @@ export function placeBid(player, settings) {
             // };
             // Was this a success?
             if (tradeResult.bidState === 'highest') {
-              dispatch(addMessage('log', `Bidding ${bid} on ${player.name}`));
+              dispatch(addMessage('success', `Bidding ${bid} on ${player.name}`));
               // Add it to watched trades for listing and update our local watchlist
               dispatch(updateTrades(tradeResult.tradeId, tradeResult));
               state = getState();
@@ -220,6 +220,8 @@ export function placeBid(player, settings) {
               // TODO: do something about this
               dispatch(addMessage('warn', `Something happened when trying to bid on ${player.name}`));
             }
+          } else {
+            dispatch(addMessage('log', `Required bid (${bid}) is more than we are willing to pay for ${player.name} (${player.price.buy})`));
           }
         }
       }
@@ -235,6 +237,7 @@ export function binNowToUnassigned() {
     let state = getState();
     const api = getApi(state.account.email);
     if (state.bid.binWon) {
+      dispatch(addMessage('log', 'Listing won BIN items...'));
       await dispatch(getUnassigned(state.account.email));
       state = getState();
       dispatch(setBINStatus(!!state.bid.unassigned.length));
@@ -268,9 +271,12 @@ export function binNowToUnassigned() {
                 bought: i.lastSalePrice,
                 boughtAt: Date.now()
               }));
+              dispatch(addMessage('success', `Listed ${trackedPlayer.name} for ${trackedPlayer.price.sell}/${trackedPlayer.price.bin}`));
             } catch (e) {
               dispatch(addMessage('error', 'Error listing won BIN for sale', e));
             }
+          } else {
+            dispatch(addMessage('warn', `Unable to send ${trackedPlayer.name} to tradepile...`));
           }
         }
       }
@@ -284,7 +290,7 @@ export function relistItems(settings) {
     const api = getApi(state.account.email);
     const expired = state.bid.tradepile.filter(i => i.tradeState === 'expired');
     if (expired.length > 0) {
-      dispatch(addMessage('log', 'Re-listing expired items'));
+      dispatch(addMessage('log', 'Re-listing expired items...'));
       let relistFailed = false;
       if (settings.relistAll) {
         try {
@@ -325,6 +331,7 @@ export function logSold() {
     const sold = state.bid.tradepile.filter(i => i.tradeState === 'closed');
 
     if (sold.length > 0) {
+      dispatch(addMessage('log', 'Removing sold items from tradepile...'));
       for (const i of sold) {
         // Is this a card we are tracking?
         const baseId = Fut.getBaseId(i.itemData.resourceId);
@@ -335,6 +342,7 @@ export function logSold() {
             sold: i.currentBid,
             soldAt: Date.now()
           }));
+          dispatch(addMessage('success', `Sold ${trackedPlayer.name} for ${i.itemData.currentBid}!`));
         }
         try {
           await api.removeFromTradepile(i.tradeId);
@@ -354,6 +362,7 @@ export function continueTracking(settings) {
     const api = getApi(state.account.email);
     const tradeIds = Object.keys(state.bid.trades);
     if (!settings.snipeOnly && tradeIds.length) {
+      dispatch(addMessage('log', `Updating status on ${tradeIds.length} active trades...`));
       let statuses;
       try {
         statuses = await api.getStatus(tradeIds);
@@ -362,6 +371,7 @@ export function continueTracking(settings) {
         dispatch(addMessage('error', `Error getting trade statuses: ${JSON.stringify(tradeIds)}`, e));
         statuses = { auctionInfo: [] };
       }
+      let newListed = false;
       for (const item of statuses.auctionInfo) {
         const baseId = Fut.getBaseId(state.bid.trades[item.tradeId].itemData.resourceId);
         const trackedPlayer = _.get(state.player, `list.${baseId}`, false);
@@ -386,6 +396,7 @@ export function continueTracking(settings) {
                     trackedPlayer.price.sell,
                     trackedPlayer.price.bin,
                     3600);
+                  newListed = true;
                   // Increment number of trades won
                   if (state.bid.listed[baseId] === undefined) {
                     dispatch(updateListed(baseId, 1));
@@ -397,6 +408,7 @@ export function continueTracking(settings) {
                     bought: item.currentBid,
                     boughtAt: Date.now()
                   }));
+                  dispatch(addMessage('success', `Listed ${trackedPlayer.name} for ${trackedPlayer.price.sell}/${trackedPlayer.price.bin}`));
                 } catch (e) {
                   dispatch(addMessage('error', 'Error listing won auction for sale', e));
                 }
@@ -408,6 +420,11 @@ export function continueTracking(settings) {
                 const trades = state.bid.trades;
                 delete trades[item.tradeId];
                 dispatch(setWatchlist(Object.values(trades)));
+                if (item.currentBid < trackedPlayer.price.buy) {
+                  dispatch(addMessage('warn', `TOO SLOW: ${trackedPlayer.name} went for ${item.currentBid}`));
+                } else {
+                  dispatch(addMessage('log', `${trackedPlayer.name} sold for ${item.currentBid}, which is more than we want to pay`));
+                }
               } catch (e) {
                 dispatch(addMessage('error', 'Error removing lost auction from watchlist', e));
               }
@@ -427,6 +444,7 @@ export function continueTracking(settings) {
                 const trades = state.bid.trades;
                 delete trades[item.tradeId];
                 dispatch(setWatchlist(Object.values(trades)));
+                dispatch(addMessage('log', `${trackedPlayer.name} (${item.currentBid}) is either too expensive, or we have enough of them`));
               } catch (e) {
                 dispatch(addMessage('error', 'Error removing outbid item from watchlist', e));
               }
@@ -440,13 +458,21 @@ export function continueTracking(settings) {
               } catch (e) {
                 dispatch(addMessage('error', 'Error placing additional bid on item', e));
               }
-              if (tradeResult.bidState !== 'highest') {
+              if (tradeResult.bidState === 'highest') {
+                dispatch(addMessage('success', `BIDDING WAR: Increased bid to ${newBid} on ${trackedPlayer.name}`));
+              } else {
                 // TODO: do something about this
                 dispatch(addMessage('warn', `Something happened when trying to bid on ${tradeResult.tradeId}`));
               }
+            } else {
+              dispatch(addMessage('warn', `We do not have enough credits to continue bidding! Min Credit Limit: ${settings.minCredits}`));
             }
           }
         }
+      }
+      if (newListed) {
+        // Update tradepile if we listed something here
+        await dispatch(getTradepile(state.account.email));
       }
     }
   };
@@ -473,7 +499,6 @@ export function keepBidding() {
           dispatch(cycle());
         }, timeout);
       } else {
-        dispatch(addMessage('log', 'Good to keep bidding'));
         await dispatch(cycle());
       }
     }
@@ -486,10 +511,8 @@ export function updatePrice(player, settings) {
     if (settings.autoUpdate) {
       const lastUpdated = moment(price.updated || 0);
       if (!price.buy || moment().isAfter(lastUpdated.add(1, 'h'))) {
-        dispatch(addMessage('log', 'Updating price...'));
+        dispatch(addMessage('log', `Updating price for ${player.name}...`));
         await dispatch(findPrice(player.id));
-      } else {
-        dispatch(addMessage('log', 'Price already up to date...'));
       }
     }
   };
@@ -498,6 +521,7 @@ export function updatePrice(player, settings) {
 
 export function getTradepile(email) {
   return async dispatch => {
+    dispatch(addMessage('log', 'Updating tradepile...'));
     const api = getApi(email);
     const response = await api.getTradepile();
     dispatch(setCredits(response.credits));
@@ -507,6 +531,7 @@ export function getTradepile(email) {
 
 export function getWatchlist(email) {
   return async dispatch => {
+    dispatch(addMessage('log', 'Updating watchlist...'));
     const api = getApi(email);
     const response = await api.getWatchlist();
     dispatch(setCredits(response.credits));
@@ -520,6 +545,7 @@ export function setWatchlist(watchlist) {
 
 export function getUnassigned(email) {
   return async dispatch => {
+    dispatch(addMessage('log', 'Updating unassigned...'));
     const api = getApi(email);
     const response = await api.getUnassigned();
     dispatch(setCredits(response.credits));

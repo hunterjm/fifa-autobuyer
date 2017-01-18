@@ -805,7 +805,8 @@ describe('actions', () => {
         const store = mockStore(initialState);
         await store.dispatch(actions.getTradepile(initialState.account.email));
         expect(apiStub.calledOnce).to.eql(true);
-        expect(store.getActions()).to.be.eql(
+        const cleanActions = _.filter(store.getActions(), a => a.type !== types.ADD_MESSAGE);
+        expect(cleanActions).to.be.eql(
           [accountActions.setCredits(1), { type: types.SET_TRADEPILE, tradepile: auctionInfo }]
         );
       });
@@ -830,7 +831,8 @@ describe('actions', () => {
         const store = mockStore(initialState);
         await store.dispatch(actions.getWatchlist(initialState.account.email));
         expect(apiStub.calledOnce).to.eql(true);
-        expect(store.getActions()).to.be.eql(
+        const cleanActions = _.filter(store.getActions(), a => a.type !== types.ADD_MESSAGE);
+        expect(cleanActions).to.be.eql(
           [accountActions.setCredits(1), actions.setWatchlist(auctionInfo)]
         );
       });
@@ -856,7 +858,8 @@ describe('actions', () => {
         const store = mockStore(initialState);
         await store.dispatch(actions.getUnassigned(initialState.account.email));
         expect(apiStub.calledOnce).to.eql(true);
-        expect(store.getActions()).to.be.eql(
+        const cleanActions = _.filter(store.getActions(), a => a.type !== types.ADD_MESSAGE);
+        expect(cleanActions).to.be.eql(
           [accountActions.setCredits(1), { type: types.SET_UNASSIGNED, unassigned: itemData }]
         );
       });
@@ -899,7 +902,8 @@ describe('actions', () => {
         await store.dispatch(actions.binNowToUnassigned());
         expect(apiStub.called).to.eql(true);
         expect(getBaseIdStub.calledOnce).to.eql(true);
-        expect(store.getActions()).to.be.eql(
+        const cleanActions = _.filter(store.getActions(), a => a.type !== types.ADD_MESSAGE);
+        expect(cleanActions).to.be.eql(
           [
             accountActions.setCredits(1),
             { type: types.SET_UNASSIGNED, unassigned: itemData },
@@ -949,7 +953,8 @@ describe('actions', () => {
         expect(getBaseIdStub.calledOnce).to.eql(true);
         expect(sendToTradepileStub.calledOnce).to.eql(true);
         expect(listItemStub.calledOnce).to.eql(true);
-        expect(store.getActions()).to.be.eql(
+        const cleanActions = _.filter(store.getActions(), a => a.type !== types.ADD_MESSAGE);
+        expect(cleanActions).to.be.eql(
           [
             accountActions.setCredits(1),
             { type: types.SET_UNASSIGNED, unassigned: itemData },
@@ -1304,7 +1309,8 @@ describe('actions', () => {
         expect(getBaseIdStub.calledOnce).to.eql(true);
         expect(removeFromTradepileStub.calledOnce).to.eql(true);
         expect(getTradepileStub.calledOnce).to.eql(true);
-        expect(store.getActions()).to.eql(
+        const cleanActions = _.filter(store.getActions(), a => a.type !== types.ADD_MESSAGE);
+        expect(cleanActions).to.eql(
           [
             actions.updateHistory(23, {
               id: itemData.id,
@@ -1493,13 +1499,16 @@ describe('actions', () => {
         const removeFromWatchlistStub = sandbox.stub().returns({});
         const placeBidStub = sandbox.stub()
           .returns({ credits: 3500, auctionInfo: [auctionInfo[2]] });
+        const getTradepileStub = sandbox.stub()
+          .returns({ credits: 3000, auctionInfo: [auctionInfo[0]] });
 
         const apiStub = sandbox.stub(ApiUtil, 'getApi').returns({
           getStatus: getStatusStub,
           sendToTradepile: sendToTradepileStub,
           listItem: listItemStub,
           removeFromWatchlist: removeFromWatchlistStub,
-          placeBid: placeBidStub
+          placeBid: placeBidStub,
+          getTradepile: getTradepileStub
         });
 
         const initialState = {
@@ -1508,13 +1517,16 @@ describe('actions', () => {
             credits: 5000
           },
           bid: {
+            tradepile: [],
+            watchlist: auctionInfo,
             trades: {
               1: auctionInfo[0],
               2: auctionInfo[1],
               3: auctionInfo[2],
               4: auctionInfo[3]
             },
-            listed: {}
+            listed: {},
+            watched: { 23: 4 }
           },
           player: {
             list: {
@@ -1533,12 +1545,14 @@ describe('actions', () => {
         const settings = { snipeOnly: false, minCredits: 1000, maxPlayer: 5 };
         const store = mockStore(initialState);
         await store.dispatch(actions.continueTracking(settings));
-        expect(apiStub.calledOnce).to.eql(true);
+        // Called once for tracking, once for tradepile
+        expect(apiStub.calledTwice).to.eql(true);
         expect(getStatusStub.calledOnce).to.eql(true);
         expect(getBaseIdStub.callCount).to.eql(4);
         expect(sendToTradepileStub.calledOnce).to.eql(true);
         expect(listItemStub.calledOnce).to.eql(true);
         expect(removeFromWatchlistStub.calledTwice).to.eql(true);
+        expect(getTradepileStub.calledOnce).to.eql(true);
         expect(placeBidStub.calledOnce).to.eql(true);
         const cleanActions = _.filter(store.getActions(), a => a.type !== types.ADD_MESSAGE);
         expect(cleanActions).to.eql([
@@ -1553,6 +1567,10 @@ describe('actions', () => {
           actions.setWatchlist([auctionInfo[0], auctionInfo[3]]),
           // Update credits after bidding war starts
           accountActions.setCredits(3500),
+          // Update credits with tradepile response
+          accountActions.setCredits(3000),
+          // Refresh tradepile since we sent something there
+          { type: types.SET_TRADEPILE, tradepile: [auctionInfo[0]] },
         ]);
       });
 
