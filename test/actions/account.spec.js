@@ -9,7 +9,6 @@ import * as ApiUtil from '../../app/utils/ApiUtil';
 import * as actions from '../../app/actions/account';
 import * as types from '../../app/actions/accountTypes';
 
-const version = 17;
 const email = 'test@test.com';
 
 const middlewares = [thunk];
