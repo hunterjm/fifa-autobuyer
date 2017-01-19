@@ -342,7 +342,7 @@ export function logSold() {
             sold: i.currentBid,
             soldAt: Date.now()
           }));
-          dispatch(addMessage('success', `Sold ${trackedPlayer.name} for ${i.itemData.currentBid}!`));
+          dispatch(addMessage('success', `Sold ${trackedPlayer.name} for ${i.currentBid}!`));
         }
         try {
           await api.removeFromTradepile(i.tradeId);
