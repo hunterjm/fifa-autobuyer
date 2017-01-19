@@ -44,7 +44,7 @@ export class PlayerDetails extends Component {
 
   render() {
     return (
-      <div className="details">
+      <div className="details player-screen">
         <Header
           player={this.player}
           updatePrice={this.updatePrice.bind(this)}

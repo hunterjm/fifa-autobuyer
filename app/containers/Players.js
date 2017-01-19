@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import _ from 'lodash';
 import classNames from 'classnames';
+import Joyride from 'react-joyride';
 import ConnectedPlayerListItem from '../components/player/PlayerListItem';
 import ConnectedHeader from '../components/Header';
 import * as PlayerActions from '../actions/player';
@@ -43,6 +44,10 @@ export class Players extends Component {
     }
   }
 
+  callback(data) {
+    console.log(data); // eslint-disable-line no-console
+  }
+
   render() {
     let sidebarHeaderClass = 'sidebar-header';
     if (this.state.sidebarOffset) {
@@ -60,8 +65,137 @@ export class Players extends Component {
       'state-running': this.props.bidding,
     });
 
+    const steps = [{
+      title: 'Search for Players',
+      text: 'Start typing the name of the player you want to bid on.  The results will appear below.  Give it a try now!',
+      selector: '.search-bar input',
+      position: 'right',
+      allowClicksThruHole: true,
+      style: {
+        beacon: {
+          offsetX: 20
+        }
+      }
+    }, {
+      title: 'Add to Player List',
+      text: 'Clicking on a player card will add it to your player list.  Let\'s do that now.',
+      selector: '.new-container .results',
+      position: 'bottom',
+      allowClicksThruHole: true,
+    }, {
+      title: 'Settings',
+      text: 'Click here so we can adjust our auto buyer settings.',
+      selector: '.sidebar-buttons .btn-preferences',
+      position: 'top',
+      allowClicksThruHole: true,
+    }, {
+      title: 'Global Settings',
+      text: `These settings add restrictions around how the auto buyer operates
+             such as the number of requests it is allowed to make in a time frame,
+             how many credits it is allowed to spend, and how many of a single player
+             it is allowed to buy.<br /><br />The defaults should be good for now, but
+             feel free to adjust these before moving on.`,
+      selector: '.preferences-content .global',
+      position: 'left',
+      allowClicksThruHole: true,
+    }, {
+      title: 'Price Settings',
+      text: `These settings control how much we are willing to spend on a player
+             relative to their lowest BIN price currently on the transfer market.
+             <br /><br />
+             <em><strong>PRO TIP</strong>: Cheaper players tend to turn a better profit than expensive
+             players.  Think about it, if Messi is going for 1 mil, you probably won't
+             find one for 900k, but you can easily get a 1k player for 900.</em>`,
+      selector: '.preferences-content .price',
+      position: 'left',
+      allowClicksThruHole: true,
+    }, {
+      title: 'View Player Info',
+      text: 'Clicking on a player here will pull up their information, including the current market price.  Take a look!',
+      selector: '.sidebar-containers .player-list',
+      position: 'right',
+      allowClicksThruHole: true,
+    }, {
+      title: 'Pricing Information',
+      text: `When viewing a player for the first time, the prices will
+             automatically update based on the settings you have configured.
+             <br /><br />
+             <small>
+             <b>LOWEST BIN</b> is the lowest price currently on the transfer market.<br />
+             <b>BUY FOR</b> is what we are willing to pay for this card.<br />
+             <b>SELL FOR</b> is our starting bid when we list this card for sale.<br />
+             <b>SET BIN</b> is our "buy it now" price when we list this card for sale.
+             </small>`,
+      selector: '.ut-bio-prices',
+      position: 'left',
+    }, {
+      title: 'Update Price',
+      text: 'If you ever need to manually re-check pricing, you can do so by clicking here.',
+      selector: '.player-screen .action',
+      position: 'bottom',
+      allowClicksThruHole: true,
+    }, {
+      title: 'Bidding Overview',
+      text: 'Click here in order to access the bidding screen.',
+      selector: '.sidebar-containers ul li',
+      position: 'right',
+      allowClicksThruHole: true,
+    }, {
+      title: 'Tradepiles',
+      text: 'This is a real time view of what is currently in your Watchlist, Transfer List, and Unassigned piles.',
+      selector: '.details-panel .left',
+      position: 'right',
+    }, {
+      title: 'Market Statistics',
+      text: 'Here, you can see information about how the market is currently performing, as well as your profit.',
+      selector: '.details-panel .right',
+      position: 'left',
+    }, {
+      title: 'Start Bidding',
+      text: 'Click here to start/stop the auto buyer',
+      selector: '.bidding-screen .action',
+      position: 'bottom',
+      allowClicksThruHole: true,
+    }, {
+      title: 'Bidding Logs',
+      text: 'If you want a more detailed view about what is going on, take a look at the logs.',
+      selector: '.logs-link',
+      position: 'left',
+      allowClicksThruHole: true,
+    }, {
+      title: 'Session Logs',
+      text: `This will display detailed information about what the auto buyer is doing.
+             It clears out at the beginning every bidding session when you click "play".`,
+      selector: '.mini-logs',
+      position: 'bottom',
+      allowClicksThruHole: true,
+    }, {
+      title: 'Available Credits',
+      text: 'Your available credits will always update here as the auto buyer is running.',
+      selector: '.login-wrapper .login',
+      position: 'bottom',
+    }, {
+      title: 'Toggle Bidding',
+      text: 'No matter where you are in the app, you can always start/stop bidding by clicking here.',
+      selector: '.sidebar-buttons .btn-bidding',
+      position: 'top',
+    }];
+
     return (
       <div className="containers">
+        <Joyride
+          ref={c => (this.joyride = c)}
+          steps={steps}
+          stepIndex={0}
+          autoStart={!Object.keys(players).length}
+          type="continuous"
+          showSkipButton
+          showStepsProgress
+          disableOverlay
+          run
+          locale={{ back: 'Back', close: 'Close', last: 'Done', next: 'Next', skip: 'Skip' }}
+          callback={this.handleJoyrideCallback}
+        />
         <ConnectedHeader hideLogin={false} />
         <div className="containers-body">
           <div className="sidebar">
@@ -98,7 +232,9 @@ export class Players extends Component {
                     </li>
                   </Link>
                 </div>
-                {players}
+                <div className="player-list">
+                  {players}
+                </div>
               </ul>
             </section>
             <section className="sidebar-buttons">
@@ -111,11 +247,11 @@ export class Players extends Component {
               {
                 this.props.bidding
                 ?
-                  (<span className="btn-sidebar btn-stop" onClick={() => this.handleToggleBidding()}>
+                  (<span className="btn-sidebar btn-stop btn-bidding" onClick={() => this.handleToggleBidding()}>
                     <span className="icon icon-stop" />
                   </span>)
                 :
-                  (<span className="btn-sidebar btn-start" onClick={() => this.handleToggleBidding()}>
+                  (<span className="btn-sidebar btn-start btn-bidding" onClick={() => this.handleToggleBidding()}>
                     <span className="icon icon-start" />
                   </span>)
               }

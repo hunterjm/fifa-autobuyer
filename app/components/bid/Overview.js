@@ -142,7 +142,7 @@ export class Overview extends Component {
       .reduce((p, c) => p + (c.sold - c.bought), 0);
 
     return (
-      <div className="details">
+      <div className="details bidding-screen">
         <Header
           start={this.props.start}
           stop={this.props.stop}
