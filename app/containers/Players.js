@@ -44,10 +44,6 @@ export class Players extends Component {
     }
   }
 
-  callback(data) {
-    console.log(data); // eslint-disable-line no-console
-  }
-
   render() {
     let sidebarHeaderClass = 'sidebar-header';
     if (this.state.sidebarOffset) {
@@ -194,7 +190,6 @@ export class Players extends Component {
           disableOverlay
           run
           locale={{ back: 'Back', close: 'Close', last: 'Done', next: 'Next', skip: 'Skip' }}
-          callback={this.handleJoyrideCallback}
         />
         <ConnectedHeader hideLogin={false} />
         <div className="containers-body">
