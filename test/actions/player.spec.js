@@ -12,6 +12,7 @@ const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 
 let sandbox;
+let clock;
 describe('actions', () => {
   describe('player', () => {
     describe('creators', () => {
@@ -46,9 +47,11 @@ describe('actions', () => {
     describe('async creators', () => {
       beforeEach(() => {
         sandbox = sinon.sandbox.create();
+        clock = sinon.useFakeTimers(Date.now());
       });
       afterEach(() => {
         sandbox.restore();
+        clock.restore();
       });
 
       it('should dispatch SAVE_SEARCH_RESULTS when search() is completed', () => {
