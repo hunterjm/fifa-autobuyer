@@ -113,7 +113,7 @@ describe('actions', () => {
     describe('async creators', () => {
       beforeEach(() => {
         sandbox = sinon.sandbox.create();
-        clock = sinon.useFakeTimers();
+        clock = sinon.useFakeTimers(Date.now());
       });
       afterEach(() => {
         sandbox.restore();
@@ -960,7 +960,7 @@ describe('actions', () => {
             { type: types.SET_UNASSIGNED, unassigned: itemData },
             actions.setBINStatus(true),
             actions.updateListed(23, 2),
-            actions.updateHistory(23, { id: undefined, bought: undefined, boughtAt: 0 })
+            actions.updateHistory(23, { id: undefined, bought: undefined, boughtAt: Date.now() })
           ]
         );
       });
@@ -1315,7 +1315,7 @@ describe('actions', () => {
             actions.updateHistory(23, {
               id: itemData.id,
               sold: 400,
-              soldAt: 0
+              soldAt: Date.now()
             }),
             accountActions.setCredits(4000),
             { type: types.SET_TRADEPILE, tradepile: itemData }
@@ -1376,7 +1376,7 @@ describe('actions', () => {
             actions.updateHistory(23, {
               id: itemData.id,
               sold: 400,
-              soldAt: 0
+              soldAt: Date.now()
             }),
             accountActions.setCredits(4000),
             { type: types.SET_TRADEPILE, tradepile: itemData }
@@ -1560,7 +1560,7 @@ describe('actions', () => {
           // Update listed count for won
           actions.updateListed(23, 1),
           // Update purchase history
-          actions.updateHistory(23, { bought: 400, boughtAt: 0, id: 1 }),
+          actions.updateHistory(23, { bought: 400, boughtAt: Date.now(), id: 1 }),
           // remove expired lost
           actions.setWatchlist([auctionInfo[0], auctionInfo[2], auctionInfo[3]]),
           // remove outbid won't pay

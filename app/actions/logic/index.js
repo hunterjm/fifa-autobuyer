@@ -79,13 +79,15 @@ export function bidCycle() {
 
       state = getState();
       if (state.bid.bidding) {
-        // Update watched items and trades
-        await dispatch(bidActions.getWatchlist(state.account.email));
-        state = getState(); // need to refresh state to get latest watchlist
-        dispatch(bidActions.setTrades(_.keyBy(state.bid.watchlist, 'tradeId')));
+        if (!settings.snipeOnly) {
+          // Update watched items and trades
+          await dispatch(bidActions.getWatchlist(state.account.email));
+          state = getState(); // need to refresh state to get latest watchlist
+          dispatch(bidActions.setTrades(_.keyBy(state.bid.watchlist, 'tradeId')));
 
-        // Perform watchlist tracking
-        await dispatch(bidActions.continueTracking(settings));
+          // Perform watchlist tracking
+          await dispatch(bidActions.continueTracking(settings));
+        }
 
         // buy now goes directly to unassigned now
         await dispatch(bidActions.binNowToUnassigned());

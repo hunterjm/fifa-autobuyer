@@ -342,7 +342,7 @@ export function logSold() {
             sold: i.currentBid,
             soldAt: Date.now()
           }));
-          dispatch(addMessage('success', `Sold ${trackedPlayer.name} for ${i.itemData.currentBid}!`));
+          dispatch(addMessage('success', `Sold ${trackedPlayer.name} for ${i.currentBid}!`));
         }
         try {
           await api.removeFromTradepile(i.tradeId);
@@ -462,7 +462,7 @@ export function continueTracking(settings) {
                 dispatch(addMessage('success', `BIDDING WAR: Increased bid to ${newBid} on ${trackedPlayer.name}`));
               } else {
                 // TODO: do something about this
-                dispatch(addMessage('warn', `Something happened when trying to bid on ${tradeResult.tradeId}`));
+                dispatch(addMessage('warn', `Something happened when trying to increase bid on ${trackedPlayer.name}`));
               }
             } else {
               dispatch(addMessage('warn', `We do not have enough credits to continue bidding! Min Credit Limit: ${settings.minCredits}`));

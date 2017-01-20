@@ -1,7 +1,7 @@
 {
   "name": "fifa-autobuyer",
   "productName": "FIFA Autobuyer",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Autobuyer for FIFA 17 Ultimate Team",
   "main": "main.js",
   "scripts": {
@@ -176,6 +176,7 @@
     "react": "^15.4.1",
     "react-bootstrap": "^0.30.3",
     "react-dom": "^15.4.1",
+    "react-joyride": "^1.9.0",
     "react-redux": "^5.0.1",
     "react-retina-image": "^2.0.3",
     "react-router": "^3.0.0",

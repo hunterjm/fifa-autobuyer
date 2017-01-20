@@ -38,7 +38,7 @@ export default validate(merge(baseConfig, {
   module: {
     loaders: [
       {
-        test: /\.less$/,
+        test: /\.(less|scss)$/,
         loader: 'style!css!autoprefixer!less'
       },
 

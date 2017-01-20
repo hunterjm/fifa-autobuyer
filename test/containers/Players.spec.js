@@ -1,9 +1,10 @@
 import React from 'react';
 import { expect } from 'chai';
-import { spy } from 'sinon';
+import sinon, { spy } from 'sinon';
 import { mount } from 'enzyme';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
+import Joyride from 'react-joyride';
 import player, { totwPlayer } from '../mocks/player';
 import { Players } from '../../app/containers/Players';
 import ConnectedPlayerListItem from '../../app/components/player/PlayerListItem';
@@ -48,9 +49,26 @@ function setup(initialState = { account: {} }, pathname = '/players') {
   };
 }
 
-
+let sandbox;
 describe('containers', () => {
   describe('Players', () => {
+    beforeEach(() => {
+      sandbox = sinon.sandbox.create();
+      [
+        'render',
+        'componentDidMount',
+        'componentWillReceiveProps',
+        'componentWillUpdate',
+        'componentDidUpdate',
+        'componentWillUnmount'
+      ].forEach(method => {
+        sandbox.stub(Joyride.prototype, method).returns(null);
+      });
+    });
+    afterEach(() => {
+      sandbox.restore();
+    });
+
     it('should call handleClickClearList when Clear List icon clicked', () => {
       const clear = spy();
       const { database } = setup({

@@ -24,8 +24,8 @@ export function initUpdater(mainWindow) {
     autoUpdater.quitAndInstall();
     return true;
   });
-  autoUpdater.addListener('error', () => {
-    notify(mainWindow, { pending: false, update: false, downloaded: false, message: 'An error occured while checking for updates.' });
+  autoUpdater.addListener('error', err => {
+    notify(mainWindow, { pending: false, update: false, downloaded: false, message: `An error occured while checking for updates: ${err.message}` });
   });
   autoUpdater.addListener('checking-for-update', () => {
     notify(mainWindow, { pending: true, update: false, downloaded: false, message: 'Checking for updates...' });

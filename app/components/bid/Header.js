@@ -9,6 +9,7 @@ class Header extends Component {
       active: !this.props.router.isActive('/players/logs'),
     });
     const logsClasses = classNames({
+      'logs-link': true,
       'details-tab': true,
       active: this.props.router.isActive('/players/logs'),
     });
