@@ -17,6 +17,9 @@ export function bidCycle() {
     // Get tradepile at beginning of every cycle
     await dispatch(bidActions.getTradepile(state.account.email));
 
+    // Relist expired trades (and list new ones if needed)
+    await dispatch(bidActions.relistItems(state.settings));
+
     // Increment cycle count
     dispatch(bidActions.setCycleCount(state.bid.cycles + 1));
 
@@ -91,9 +94,6 @@ export function bidCycle() {
 
         // buy now goes directly to unassigned now
         await dispatch(bidActions.binNowToUnassigned());
-
-        // Relist expired trades (and list new ones if needed)
-        await dispatch(bidActions.relistItems(settings));
 
         // Log sold items
         await dispatch(bidActions.logSold());
