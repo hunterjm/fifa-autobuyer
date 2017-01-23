@@ -49,7 +49,7 @@ export class Account extends Component {
     // one uppercase letter, and a number
     if (!validator.matches(
       this.props.account.password || '',
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,16}$/)
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d-!$%^&*()_+|~=`{}\[\]:";'<>?,.\/]{8,16}$/)
     ) {
       errors.password = (<span>Your password must be 8 - 16 characters, and include at least<br />
         one lowercase letter, one uppercase letter, and a number<br /><br /></span>);
