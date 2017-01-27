@@ -1,6 +1,5 @@
 import _ from 'lodash';
 import * as types from '../actions/playerTypes';
-import * as bidTypes from '../actions/bidTypes';
 
 export const initialState = {
   search: {},
@@ -19,7 +18,6 @@ export function player(state = initialState, action) {
       _.set(nextState, `list.${_.get(action, 'player.id')}`, action.player);
       // Setup additional information
       _.set(nextState, `list.${_.get(action, 'player.id')}.price`, {});
-      _.set(nextState, `list.${_.get(action, 'player.id')}.history`, {});
       return nextState;
     }
     case types.REMOVE_PLAYER: {
@@ -35,15 +33,6 @@ export function player(state = initialState, action) {
     case types.SET_PRICE: {
       const nextState = _.merge({}, state);
       _.set(nextState, `list.${action.id}.price`, action.price);
-      return nextState;
-    }
-    case bidTypes.UPDATE_PLAYER_HISTORY: {
-      const nextState = _.merge({}, state);
-      const history = {};
-      history[action.history.id] = action.history;
-      _.set(nextState, `list.${action.id}.history`, _.merge(
-        {}, _.get(nextState, `list.${action.id}.history`, {}), history
-      ));
       return nextState;
     }
     default:

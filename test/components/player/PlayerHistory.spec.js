@@ -35,6 +35,7 @@ function setup(active = false) {
       list: {},
       search: {}
     },
+    history: {},
     market: {
       data: [[1483760374000, 1000], [1483760434000, 1100]],
       flags: []
@@ -46,6 +47,24 @@ function setup(active = false) {
   };
   props.player.list[player.id] = player;
   props.player.list[totwPlayer.id] = totwPlayer;
+  props.history[player.id] = {
+    123456789: {
+      id: 123456789,
+      bought: 1411000,
+      boughtAt: 123456789,
+      sold: 1450000,
+      soldAt: 142356789
+    }
+  };
+  props.history[totwPlayer.id] = {
+    123456789: {
+      id: 123456789,
+      bought: 239000,
+      boughtAt: 123456789,
+      sold: 269000,
+      soldAt: 142356789
+    }
+  };
   const component = mount(<PlayerHistory {...actions} {...props} />, context);
   return {
     component,
