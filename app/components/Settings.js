@@ -41,6 +41,10 @@ export class Settings extends Component {
       errors.maxCard = 'Must be numeric';
     }
 
+    if (!validator.isFloat(this.props.settings.autoStop)) {
+      errors.autoStop = 'Must be float';
+    }
+
     if (!validator.isNumeric(this.props.settings.buy)) {
       errors.buy = 'Must be numeric';
     }
@@ -73,7 +77,7 @@ export class Settings extends Component {
 
   render() {
     const {
-      rpm, minCredits, maxCard, snipeOnly, autoUpdate, buy, sell, bin, relistAll
+      rpm, minCredits, maxCard, autoStop, snipeOnly, autoUpdate, buy, sell, bin, relistAll
      } = this.props.settings;
     return (
       <div className="preferences">
@@ -117,6 +121,21 @@ export class Settings extends Component {
                   value={maxCard || ''} type="text" onChange={this.handleChange.bind(this)} onBlur={this.handleBlur.bind(this)}
                 />
                 <p className="error-message">{this.state.errors.maxCard}</p>
+              </div>
+            </div>
+            <div className="option">
+              <div className="option-name">
+                <label htmlFor="maxCard">Auto Stop</label>
+                <p><small>
+                  Automatically stops bidding after set amount of hours. (0 is disabled)
+                </small></p>
+              </div>
+              <div className="option-value">
+                <input
+                  ref={autoStopInput => (this.autoStopInput = autoStopInput)} maxLength="4" name="autoStop" placeholder="Auto Stop"
+                  value={autoStop || ''} type="text" onChange={this.handleChange.bind(this)} onBlur={this.handleBlur.bind(this)}
+                />
+                <p className="error-message">{this.state.errors.autoStop}</p>
               </div>
             </div>
             <div className="option">
@@ -220,6 +239,7 @@ Settings.propTypes = {
     rpm: PropTypes.string,
     minCredits: PropTypes.string,
     maxCard: PropTypes.string,
+    autoStop: PropTypes.string,
     snipeOnly: PropTypes.bool,
     autoUpdate: PropTypes.bool,
     buy: PropTypes.string,

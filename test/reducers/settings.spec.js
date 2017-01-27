@@ -10,6 +10,7 @@ describe('reducers', () => {
         rpm: '10',
         minCredits: '1000',
         maxCard: '10',
+        autoStop: '0',
         snipeOnly: false,
         autoUpdate: true,
         buy: '90',

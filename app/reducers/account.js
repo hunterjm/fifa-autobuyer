@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import * as types from '../actions/accountTypes';
 
-const initialState = {
+export const initialState = {
   email: '',
   password: '',
   secret: '',

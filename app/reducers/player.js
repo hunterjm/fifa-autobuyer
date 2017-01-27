@@ -2,7 +2,7 @@ import _ from 'lodash';
 import * as types from '../actions/playerTypes';
 import * as bidTypes from '../actions/bidTypes';
 
-const initialState = {
+export const initialState = {
   search: {},
   list: {}
 };
