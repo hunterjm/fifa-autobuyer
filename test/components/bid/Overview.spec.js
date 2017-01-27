@@ -32,6 +32,7 @@ function setup(state, history = false) {
       list: {},
       search: {}
     },
+    history: {},
     bid: {
       bidding: false,
       watchlist: [],
@@ -45,6 +46,24 @@ function setup(state, history = false) {
   }, state);
   initialState.player.list[player.id] = player;
   initialState.player.list[totwPlayer.id] = totwPlayer;
+  initialState.history[player.id] = {
+    123456789: {
+      id: 123456789,
+      bought: 1411000,
+      boughtAt: 123456789,
+      sold: 1450000,
+      soldAt: 142356789
+    }
+  };
+  initialState.history[totwPlayer.id] = {
+    123456789: {
+      id: 123456789,
+      bought: 239000,
+      boughtAt: 123456789,
+      sold: 269000,
+      soldAt: 142356789
+    }
+  };
   const store = mockStore(initialState);
   const context = {
     context: {

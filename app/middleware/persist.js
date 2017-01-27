@@ -14,6 +14,7 @@ export default ({ getState }) => next => action => {
       // player list
       list: _.merge({}, _.get(state, 'player.list', {}))
     },
+    history: _.merge({}, _.get(state, 'history', {})),
     settings: {
       // global settings
       ...state.settings

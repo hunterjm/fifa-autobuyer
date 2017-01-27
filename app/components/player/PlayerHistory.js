@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import React, { PropTypes, Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -47,7 +48,7 @@ export class PlayerHistory extends Component {
   }
 
   render() {
-    const history = Object.values(this.player.history);
+    const history = Object.values(_.get(this.props.history, this.player.id, {}));
 
     // Stats
     const bought = history.filter(trade => trade.bought > 0);
@@ -277,6 +278,7 @@ PlayerHistory.propTypes = {
   player: PropTypes.shape({
     list: PropTypes.shape({})
   }),
+  history: PropTypes.shape({}),
   market: PropTypes.shape({
     // title: PropTypes.string,
     data: PropTypes.array,
@@ -291,6 +293,7 @@ PlayerHistory.contextTypes = {
 function mapStateToProps(state) {
   return {
     player: state.player,
+    history: state.history,
     platform: state.account.platform,
     market: state.bid.market,
   };
