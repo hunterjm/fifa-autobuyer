@@ -122,13 +122,31 @@ describe('actions', () => {
 
       it('should reset cycle count and call cycle() when start() is called', async () => {
         const logicStub = sandbox.stub(logic, 'default').returns(() => {});
-        const store = mockStore({});
+        const store = mockStore({ settings: { autoStop: '0' } });
         await store.dispatch(actions.start());
         expect(logicStub.calledOnce).to.eql(true);
         expect(store.getActions()).to.be.eql([
           { type: types.START_BIDDING },
           { type: types.SET_CYCLES, count: 0 },
           { type: types.CLEAR_MESSAGES }
+        ]);
+      });
+
+      it('should automatically stop bidding after specified time when start() is called', async () => {
+        const logicStub = sandbox.stub(logic, 'default').returns(() => {});
+        const store = mockStore({ settings: { autoStop: '1' } });
+        await store.dispatch(actions.start());
+        expect(logicStub.calledOnce).to.eql(true);
+
+        // Pass an hour by, which is what our autoStop is set to
+        clock.tick(60 * 60 * 1000);
+
+        const cleanActions = _.filter(store.getActions(), a => a.type !== types.ADD_MESSAGE);
+        expect(cleanActions).to.be.eql([
+          { type: types.START_BIDDING },
+          { type: types.SET_CYCLES, count: 0 },
+          { type: types.CLEAR_MESSAGES },
+          { type: types.STOP_BIDDING }
         ]);
       });
 
@@ -1574,7 +1592,7 @@ describe('actions', () => {
         ]);
       });
 
-      it('should handle clearing existing timer when stop() is called', async () => {
+      it('should handle clearing existing timers when stop() is called', async () => {
         const logicStub = sandbox.stub(logic, 'default').returns(() => {});
         const initialState = {
           account: {
@@ -1587,7 +1605,8 @@ describe('actions', () => {
             tradepile: [{ expires: 180 }]
           },
           settings: {
-            minCredits: 10000
+            minCredits: 10000,
+            autoStop: '1'
           }
         };
 

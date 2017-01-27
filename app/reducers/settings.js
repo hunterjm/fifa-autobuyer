@@ -1,10 +1,11 @@
 import _ from 'lodash';
 import * as types from '../actions/settingsTypes';
 
-const initialState = {
+export const initialState = {
   rpm: '10',
   minCredits: '1000',
   maxCard: '10',
+  autoStop: '0',
   snipeOnly: false,
   autoUpdate: true,
   buy: '90',

@@ -14,14 +14,23 @@ const filter = {
   num: 16,
 };
 
+let biddingTimeout;
 let cycleTimeout;
 let marketRequest;
 
 export function start() {
-  return async dispatch => {
+  return async (dispatch, getState) => {
     dispatch({ type: types.START_BIDDING });
     dispatch(setCycleCount(0));
     dispatch(clearMessages());
+    const state = getState();
+    if (parseFloat(state.settings.autoStop, 10)) {
+      dispatch(addMessage('warn', `Bidding will automatically stop after ${state.settings.autoStop} hours.`));
+      biddingTimeout = window.setTimeout(() => {
+        dispatch(addMessage('warn', `Bidding automatically stopped after ${state.settings.autoStop} hours.`));
+        dispatch(stop());
+      }, Math.round(state.settings.autoStop * 60 * 60 * 1000)); // autoStop is in hours
+    }
     await dispatch(cycle());
   };
 }
@@ -558,6 +567,10 @@ export function updateHistory(id, history) {
 }
 
 export function stop() {
+  if (biddingTimeout) {
+    window.clearTimeout(biddingTimeout);
+    biddingTimeout = undefined;
+  }
   if (cycleTimeout) {
     window.clearTimeout(cycleTimeout);
     cycleTimeout = undefined;
