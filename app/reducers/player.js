@@ -18,6 +18,7 @@ export function player(state = initialState, action) {
       _.set(nextState, `list.${_.get(action, 'player.id')}`, action.player);
       // Setup additional information
       _.set(nextState, `list.${_.get(action, 'player.id')}.price`, {});
+      _.set(nextState, `list.${_.get(action, 'player.id')}.settings`, {});
       return nextState;
     }
     case types.REMOVE_PLAYER: {
