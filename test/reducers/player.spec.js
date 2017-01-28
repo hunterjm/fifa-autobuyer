@@ -90,6 +90,53 @@ describe('reducers', () => {
       });
     });
 
+    it('should handle SET_SETTING when value is passed', () => {
+      const initialState = {
+        list: {
+          123456: { id: '123456' },
+          158023: { id: '158023' }
+        }
+      };
+      const nextState = player(initialState, {
+        type: types.SET_SETTING,
+        id: 158023,
+        key: 'maxCard',
+        value: '10'
+      });
+      expect(nextState.list).to.eql({
+        123456: { id: '123456' },
+        158023: {
+          id: '158023',
+          settings: { maxCard: '10' }
+        }
+      });
+    });
+
+    it('should handle SET_SETTING when empty value is passed', () => {
+      const initialState = {
+        list: {
+          123456: { id: '123456' },
+          158023: {
+            id: '158023',
+            settings: { maxCard: '10' }
+          }
+        }
+      };
+      const nextState = player(initialState, {
+        type: types.SET_SETTING,
+        id: 158023,
+        key: 'maxCard',
+        value: ''
+      });
+      expect(nextState.list).to.eql({
+        123456: { id: '123456' },
+        158023: {
+          id: '158023',
+          settings: {}
+        }
+      });
+    });
+
     it('should handle unknown action type', () => {
       expect(
         player({ player: {} }, { type: 'unknown' })

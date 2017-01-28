@@ -36,6 +36,15 @@ export function player(state = initialState, action) {
       _.set(nextState, `list.${action.id}.price`, action.price);
       return nextState;
     }
+    case types.SET_SETTING: {
+      const nextState = _.merge({}, state);
+      if (action.value !== '') {
+        _.set(nextState, `list.${action.id}.settings.${action.key}`, action.value);
+      } else {
+        _.unset(nextState, `list.${action.id}.settings.${action.key}`);
+      }
+      return nextState;
+    }
     default:
       return state;
   }

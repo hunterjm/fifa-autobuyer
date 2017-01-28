@@ -104,6 +104,10 @@ export function setPrice(id, price) {
   return { type: types.SET_PRICE, id, price };
 }
 
+export function setSetting(id, key, value) {
+  return { type: types.SET_SETTING, id, key, value };
+}
+
 export function add(player) {
   metrics.track('Add Player', {
     id: player.id,

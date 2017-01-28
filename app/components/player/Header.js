@@ -13,11 +13,18 @@ class Header extends Component {
     const player = this.props.player;
     const tabBioClasses = classNames({
       'details-tab': true,
-      active: !this.props.router.isActive(`/players/${player.id}/history`),
+      active: (
+        !this.props.router.isActive(`/players/${player.id}/history`)
+        && !this.props.router.isActive(`/players/${player.id}/settings`)
+      ),
+    });
+    const tabHistoryClasses = classNames({
+      'details-tab': true,
+      active: this.props.router.isActive(`/players/${player.id}/history`),
     });
     const tabSettingsClasses = classNames({
       'details-tab': true,
-      active: this.props.router.isActive(`/players/${player.id}/history`),
+      active: this.props.router.isActive(`/players/${player.id}/settings`),
     });
     return (
       <div>
@@ -51,7 +58,8 @@ class Header extends Component {
           </div>
           <div className="details-subheader-tabs">
             <span className={tabBioClasses}><Link to={`/players/${player.id}`}>Bio</Link></span>
-            <span className={tabSettingsClasses}><Link to={`/players/${player.id}/history`}>History</Link></span>
+            <span className={tabHistoryClasses}><Link to={`/players/${player.id}/history`}>History</Link></span>
+            <span className={tabSettingsClasses}><Link to={`/players/${player.id}/settings`}>Settings</Link></span>
           </div>
         </div>
       </div>

@@ -2,7 +2,7 @@
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import sinon from 'sinon';
-import nock from 'nock';
+import request from 'request';
 import { expect } from 'chai';
 import * as ApiUtil from '../../app/utils/ApiUtil';
 import * as actions from '../../app/actions/player';
@@ -21,6 +21,15 @@ describe('actions', () => {
         const price = { lowest: 1000, total: 3 };
         expect(actions.setPrice(id, price)).to.eql(
           { type: types.SET_PRICE, id, price }
+        );
+      });
+
+      it('setSetting should create SET_SETTING action', () => {
+        const id = '123456';
+        const key = 'buy';
+        const value = '1000';
+        expect(actions.setSetting(id, key, value)).to.eql(
+          { type: types.SET_SETTING, id, key, value }
         );
       });
 
@@ -54,7 +63,7 @@ describe('actions', () => {
         clock.restore();
       });
 
-      it('should dispatch SAVE_SEARCH_RESULTS when search() is completed', () => {
+      it('should dispatch SAVE_SEARCH_RESULTS when search() is completed', async () => {
         // Mock search response
         const results = {
           count: 3,
@@ -68,16 +77,15 @@ describe('actions', () => {
           totalResults: 3,
           type: 'FUTPlayerItemList'
         };
-        nock('https://www.easports.com')
-          .get('/uk/fifa/ultimate-team/api/fut/item').query(true)
-          .reply(200, results);
+        const requestStub = sandbox.stub(request, 'get')
+          .yields(null, { statusCode: 200 }, JSON.stringify(results))
+          .returns({ abort: sandbox.spy() });
 
         const store = mockStore({});
 
-        return store.dispatch(actions.search('messi'))
-          .then(() => { // return of async actions
-            expect(store.getActions()).to.include({ type: types.SAVE_SEARCH_RESULTS, results });
-          });
+        await store.dispatch(actions.search('messi', 1));
+        expect(requestStub.calledOnce).to.eql(true);
+        expect(store.getActions()).to.include({ type: types.SAVE_SEARCH_RESULTS, results });
       });
 
       it('should dispatch SET_PRICE when findPrice() is completed', async () => {
