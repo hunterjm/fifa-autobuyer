@@ -20,10 +20,12 @@ class Header extends Component {
     });
     const tabHistoryClasses = classNames({
       'details-tab': true,
+      'player-history': true,
       active: this.props.router.isActive(`/players/${player.id}/history`),
     });
     const tabSettingsClasses = classNames({
       'details-tab': true,
+      'player-settings': true,
       active: this.props.router.isActive(`/players/${player.id}/settings`),
     });
     return (

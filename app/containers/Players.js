@@ -131,6 +131,22 @@ export class Players extends Component {
       position: 'bottom',
       allowClicksThruHole: true,
     }, {
+      title: 'Individual Settings',
+      text: `You can customize player settings individually by clicking here.  This is also
+             where you would go to manually set the player's price.  Be sure to uncheck
+             auto update if that is what you want to do!`,
+      selector: '.details-subheader-tabs .player-settings',
+      position: 'left',
+      allowClicksThruHole: false,
+    }, {
+      title: 'Price History',
+      text: `This tab will give you additional information about historical pricing
+             for the player, as well as what your profit from bidding on this player
+             has been.`,
+      selector: '.details-subheader-tabs .player-history',
+      position: 'left',
+      allowClicksThruHole: false,
+    }, {
       title: 'Bidding Overview',
       text: 'Click here in order to access the bidding screen.',
       selector: '.sidebar-containers ul li',
