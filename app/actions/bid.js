@@ -523,6 +523,8 @@ export function updatePrice(player, settings) {
         dispatch(addMessage('log', `Updating price for ${player.name}...`));
         await dispatch(findPrice(player.id));
       }
+    } else {
+      dispatch(addMessage('warn', `Auto update prices is disabled for ${player.name}...`));
     }
   };
 }
