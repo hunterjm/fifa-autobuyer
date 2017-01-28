@@ -2,7 +2,6 @@
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import Fut from 'fut-promise';
-import moment from 'moment';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import _ from 'lodash';
@@ -13,7 +12,7 @@ import * as playerActions from '../../app/actions/player';
 import * as types from '../../app/actions/bidTypes';
 import * as logic from '../../app/actions/logic';
 import * as ApiUtil from '../../app/utils/ApiUtil';
-import player, { bidPlayer } from '../mocks/player';
+import player from '../mocks/player';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
@@ -122,13 +121,31 @@ describe('actions', () => {
 
       it('should reset cycle count and call cycle() when start() is called', async () => {
         const logicStub = sandbox.stub(logic, 'default').returns(() => {});
-        const store = mockStore({});
+        const store = mockStore({ settings: { autoStop: '0' } });
         await store.dispatch(actions.start());
         expect(logicStub.calledOnce).to.eql(true);
         expect(store.getActions()).to.be.eql([
           { type: types.START_BIDDING },
           { type: types.SET_CYCLES, count: 0 },
           { type: types.CLEAR_MESSAGES }
+        ]);
+      });
+
+      it('should automatically stop bidding after specified time when start() is called', async () => {
+        const logicStub = sandbox.stub(logic, 'default').returns(() => {});
+        const store = mockStore({ settings: { autoStop: '1' } });
+        await store.dispatch(actions.start());
+        expect(logicStub.calledOnce).to.eql(true);
+
+        // Pass an hour by, which is what our autoStop is set to
+        clock.tick(60 * 60 * 1000);
+
+        const cleanActions = _.filter(store.getActions(), a => a.type !== types.ADD_MESSAGE);
+        expect(cleanActions).to.be.eql([
+          { type: types.START_BIDDING },
+          { type: types.SET_CYCLES, count: 0 },
+          { type: types.CLEAR_MESSAGES },
+          { type: types.STOP_BIDDING }
         ]);
       });
 
@@ -500,7 +517,7 @@ describe('actions', () => {
 
         const settings = { minCredits: 10000, maxCard: 5, snipeOnly: false };
         const store = mockStore(initialState);
-        await store.dispatch(actions.placeBid(bidPlayer, settings));
+        await store.dispatch(actions.placeBid(player, settings));
         expect(apiStub.calledOnce).to.eql(true);
         expect(highestPriceStub.calledOnce).to.eql(true);
         const cleanActions = _.filter(store.getActions(), a => a.type !== types.ADD_MESSAGE);
@@ -517,7 +534,7 @@ describe('actions', () => {
               }
             }),
             actions.setWatchlist([]),
-            actions.updateWatched(bidPlayer.id, 1)
+            actions.updateWatched(player.id, 1)
           ]
         );
       });
@@ -568,7 +585,7 @@ describe('actions', () => {
 
         const settings = { minCredits: 10000, maxCard: 5, snipeOnly: false };
         const store = mockStore(initialState);
-        await store.dispatch(actions.placeBid(bidPlayer, settings));
+        await store.dispatch(actions.placeBid(player, settings));
         expect(apiStub.calledOnce).to.eql(true);
         expect(highestPriceStub.called).to.eql(false);
         const cleanActions = _.filter(store.getActions(), a => a.type !== types.ADD_MESSAGE);
@@ -585,7 +602,7 @@ describe('actions', () => {
               }
             }),
             actions.setWatchlist([]),
-            actions.updateWatched(bidPlayer.id, 3)
+            actions.updateWatched(player.id, 3)
           ]
         );
       });
@@ -624,7 +641,7 @@ describe('actions', () => {
 
         const settings = { minCredits: 10000, maxCard: 5, snipeOnly: false };
         const store = mockStore(initialState);
-        await store.dispatch(actions.placeBid(bidPlayer, settings));
+        await store.dispatch(actions.placeBid(player, settings));
         expect(apiStub.calledOnce).to.eql(true);
         expect(searchStub.calledOnce).to.eql(true);
         expect(highestPriceStub.calledOnce).to.eql(true);
@@ -776,11 +793,11 @@ describe('actions', () => {
         };
 
         const findPriceStub = sandbox.stub(playerActions, 'findPrice').returns(() => {});
-        bidPlayer.price.updated = moment().toISOString(); // set update to now
         const store = mockStore(initialState);
         const settings = { minCredits: 1000, maxCard: 5, autoUpdate: true };
 
-        await store.dispatch(actions.updatePrice(bidPlayer, settings));
+        const testPlayer = _.merge({}, player, { price: { updated: Date.now() } });
+        await store.dispatch(actions.updatePrice(testPlayer, settings));
         expect(findPriceStub.calledOnce).to.eql(false);
       });
 
@@ -881,7 +898,7 @@ describe('actions', () => {
       });
 
       it('should getUnassigned and setBINStatus and stop if trackedPlayer is empty if state.bid.binWon is true when binNowToUnassigned() is called', async () => {
-        const itemData = [{ id: bidPlayer.Id, resourceId: 1 }];
+        const itemData = [{ id: player.Id, resourceId: 1 }];
         const getUnassignedStub = sandbox.stub().returns({ credits: 1, itemData });
         const apiStub = sandbox.stub(ApiUtil, 'getApi').returns({
           getUnassigned: getUnassignedStub
@@ -913,7 +930,7 @@ describe('actions', () => {
       });
 
       it('should send player to tradepile binNowToUnassigned() is called', async () => {
-        const itemData = [{ id: bidPlayer.Id, resourceId: 1 }];
+        const itemData = [{ id: player.Id, resourceId: 1 }];
         const getUnassignedStub = sandbox.stub().returns({ credits: 1, itemData });
         const sendToTradepileStub = sandbox.stub().returns({ itemData: [{ success: true }] });
         const listItemStub = sandbox.stub().returns({});
@@ -966,15 +983,14 @@ describe('actions', () => {
       });
 
       it('should throw error when sendToTradepile() is called when binNowToUnassigned() is called', async () => {
-        const itemData = [{ id: bidPlayer.Id, resourceId: 1 }];
+        const itemData = [{ id: player.id, resourceId: 1 }];
         const getUnassignedStub = sandbox.stub().returns({ credits: 1, itemData });
         const sendToTradepileStub = sandbox.stub().throws();
         const apiStub = sandbox.stub(ApiUtil, 'getApi').returns({
           getUnassigned: getUnassignedStub,
           sendToTradepile: sendToTradepileStub
         });
-        const getBaseIdStub = sandbox.stub(Fut, 'getBaseId').returns(23);
-        bidPlayer.list = { 23: { } };
+        const getBaseIdStub = sandbox.stub(Fut, 'getBaseId').returns(player.id);
         const initialState = {
           account: {
             email: 'test@test.com',
@@ -984,8 +1000,11 @@ describe('actions', () => {
             binWon: true,
             unassigned: itemData
           },
-          player: bidPlayer
+          player: {
+            list: {}
+          }
         };
+        initialState.player.list[player.id] = player;
 
         const store = mockStore(initialState);
         await store.dispatch(actions.binNowToUnassigned());
@@ -1003,7 +1022,7 @@ describe('actions', () => {
       });
 
       it('should throw error when listItem() is called when binNowToUnassigned() is called', async () => {
-        const itemData = [{ id: bidPlayer.Id, resourceId: 1 }];
+        const itemData = [{ id: player.Id, resourceId: 1 }];
         const getUnassignedStub = sandbox.stub().returns({ credits: 1, itemData });
         const sendToTradepileStub = sandbox.stub().returns({ itemData: [{ success: true }] });
         const listItemStub = sandbox.stub().throws();
@@ -1102,7 +1121,7 @@ describe('actions', () => {
       });
 
       it('should handle 500 code when relistItems() is called', async () => {
-        const itemData = [{ tradeStae: 'expired', id: bidPlayer.Id, resourceId: 1, startingBid: 350, buyNowPrice: 550 }];
+        const itemData = [{ tradeStae: 'expired', id: player.Id, resourceId: 1, startingBid: 350, buyNowPrice: 550 }];
         const listItemStub = sandbox.stub().throws();
         const relistStub = sandbox.stub().returns({ code: 500 });
         const apiStub = sandbox.stub(ApiUtil, 'getApi').returns({
@@ -1145,7 +1164,7 @@ describe('actions', () => {
       });
 
       it('should handle error in api.listItem() when relistItems() is called', async () => {
-        const itemData = [{ tradeStae: 'expired', id: bidPlayer.Id, resourceId: 1, startingBid: 350, buyNowPrice: 550 }];
+        const itemData = [{ tradeStae: 'expired', id: player.Id, resourceId: 1, startingBid: 350, buyNowPrice: 550 }];
         const listItemStub = sandbox.stub().throws();
         const relistStub = sandbox.stub().throws();
         const apiStub = sandbox.stub(ApiUtil, 'getApi').returns({
@@ -1188,7 +1207,7 @@ describe('actions', () => {
       });
 
       it('should manually relist items when error occurs on relistAll when relistItems() is called', async () => {
-        const itemData = [{ tradeStae: 'expired', id: bidPlayer.Id, resourceId: 1, startingBid: 350, buyNowPrice: 550 }];
+        const itemData = [{ tradeStae: 'expired', id: player.Id, resourceId: 1, startingBid: 350, buyNowPrice: 550 }];
         const listItemStub = sandbox.stub().returns({});
         const relistStub = sandbox.stub().throws();
         const apiStub = sandbox.stub(ApiUtil, 'getApi').returns({
@@ -1231,7 +1250,7 @@ describe('actions', () => {
       });
 
       it('should do nothing when nothing has been sold when logSold() is called', async () => {
-        const itemData = [{ id: bidPlayer.Id, resourceId: 1, startingBid: 350, buyNowPrice: 550 }];
+        const itemData = [{ id: player.Id, resourceId: 1, startingBid: 350, buyNowPrice: 550 }];
         // const listItemStub = sandbox.stub().throws();
         // const relistStub = sandbox.stub().throws();
         const apiStub = sandbox.stub(ApiUtil, 'getApi').returns({});
@@ -1264,7 +1283,7 @@ describe('actions', () => {
 
       it('should successfully execute logSold()', async () => {
         const itemData = {
-          id: bidPlayer.id,
+          id: player.id,
           resourceId: 1,
           startingBid: 350,
           buyNowPrice: 550,
@@ -1325,7 +1344,7 @@ describe('actions', () => {
 
       it('should throw when removeFromTradepile is called when logSold() is called', async () => {
         const itemData = {
-          id: bidPlayer.id,
+          id: player.id,
           resourceId: 1,
           startingBid: 350,
           buyNowPrice: 550,
@@ -1574,7 +1593,7 @@ describe('actions', () => {
         ]);
       });
 
-      it('should handle clearing existing timer when stop() is called', async () => {
+      it('should handle clearing existing timers when stop() is called', async () => {
         const logicStub = sandbox.stub(logic, 'default').returns(() => {});
         const initialState = {
           account: {
@@ -1587,7 +1606,8 @@ describe('actions', () => {
             tradepile: [{ expires: 180 }]
           },
           settings: {
-            minCredits: 10000
+            minCredits: 10000,
+            autoStop: '1'
           }
         };
 

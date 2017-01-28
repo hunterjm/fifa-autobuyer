@@ -135,8 +135,8 @@ export class Overview extends Component {
       };
     }
 
-    const lifetimeTrades = Object.values(this.props.player.list)
-      .reduce((p, c) => p.concat(Object.values(c.history)), [])
+    const lifetimeTrades = Object.values(this.props.history)
+      .reduce((p, c) => p.concat(Object.values(c)), [])
       .filter(trade => trade.bought > 0 && trade.sold > 0);
     const lifetimeProfit = lifetimeTrades
       .reduce((p, c) => p + (c.sold - c.bought), 0);
@@ -195,6 +195,7 @@ Overview.propTypes = {
   player: PropTypes.shape({
     list: PropTypes.shape({})
   }),
+  history: PropTypes.shape({}),
   bid: PropTypes.shape({
     market: PropTypes.shape({
       data: PropTypes.array,
@@ -216,6 +217,7 @@ Overview.contextTypes = {
 function mapStateToProps(state) {
   return {
     player: state.player,
+    history: state.history,
     bid: state.bid,
     bidding: state.bid.bidding,
     platform: state.account.platform,

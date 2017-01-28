@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-const initialState = {
+export const initialState = {
   updates: {
     pending: false,
     update: false,

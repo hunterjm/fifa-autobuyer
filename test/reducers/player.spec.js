@@ -1,7 +1,6 @@
 import { expect } from 'chai';
 import { player } from '../../app/reducers/player';
 import * as types from '../../app/actions/playerTypes';
-import * as bidTypes from '../../app/actions/bidTypes';
 
 
 describe('reducers', () => {
@@ -91,61 +90,49 @@ describe('reducers', () => {
       });
     });
 
-    it('should handle UPDATE_PLAYER_HISTORY (add new history)', () => {
+    it('should handle SET_SETTING when value is passed', () => {
       const initialState = {
         list: {
           123456: { id: '123456' },
-          158023: {
-            id: '158023',
-            history: { 123456789: { id: 123456789, bought: 1000, boughtAt: 987654321 } }
-          }
+          158023: { id: '158023' }
         }
       };
       const nextState = player(initialState, {
-        type: bidTypes.UPDATE_PLAYER_HISTORY,
+        type: types.SET_SETTING,
         id: 158023,
-        history: { id: 987654321, bought: 1100, boughtAt: 9786756453 }
+        key: 'maxCard',
+        value: '10'
       });
       expect(nextState.list).to.eql({
         123456: { id: '123456' },
         158023: {
           id: '158023',
-          history: {
-            123456789: { id: 123456789, bought: 1000, boughtAt: 987654321 },
-            987654321: { id: 987654321, bought: 1100, boughtAt: 9786756453 }
-          }
+          settings: { maxCard: '10' }
         }
       });
     });
 
-    it('should handle UPDATE_PLAYER_HISTORY (modify existing)', () => {
+    it('should handle SET_SETTING when empty value is passed', () => {
       const initialState = {
         list: {
           123456: { id: '123456' },
           158023: {
             id: '158023',
-            history: { 123456789: { id: 123456789, bought: 1000, boughtAt: 123456789 } }
+            settings: { maxCard: '10' }
           }
         }
       };
       const nextState = player(initialState, {
-        type: bidTypes.UPDATE_PLAYER_HISTORY,
+        type: types.SET_SETTING,
         id: 158023,
-        history: { id: 123456789, sold: 1200, soldAt: 987654321 }
+        key: 'maxCard',
+        value: ''
       });
       expect(nextState.list).to.eql({
         123456: { id: '123456' },
         158023: {
           id: '158023',
-          history: {
-            123456789: {
-              id: 123456789,
-              bought: 1000,
-              boughtAt: 123456789,
-              sold: 1200,
-              soldAt: 987654321
-            }
-          }
+          settings: {}
         }
       });
     });
