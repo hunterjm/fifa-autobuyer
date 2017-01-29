@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>{{ page.title | default: site.title }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#157878">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">{{ site.title | default: site.github.repository_name }}</h1>
+      <h2 class="project-tagline">{{ site.description | default: site.github.project_tagline }}</h2>
+      {% if site.github.is_project_page %}
+        <a href="{{ site.github.repository_url }}" class="btn">View on GitHub</a>
+      {% endif %}
+      {% if site.github.releases %}
+        {% assign latest = site.github.releases[0] %}
+        {% for asset in latest.assets %}
+          {% if asset.name contains '.exe' %}
+            <a href="{{ asset.browser_download_url }}" class="btn">Windows <small>({{ latest.tag_name }})</small></a>
+          {% endif %}
+          {% if asset.name contains '.dmg' %}
+            <a href="{{ asset.browser_download_url }}" class="btn">Mac <small>({{ latest.tag_name }})</small></a>
+          {% endif %}
+        {% endfor %}
+        <a href="{{ site.github.releases_url }}" class="btn">Other <small>({{ latest.tag_name }})</small></a>
+      {% endif %}
+      <br />
+      <a href="https://gitter.im/hunterjm/fifa-autobuyer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge"><img src="https://badges.gitter.im/hunterjm/fifa-autobuyer.svg" /></a>
+      <a href="https://travis-ci.org/hunterjm/fifa-autobuyer"><img src="https://travis-ci.org/hunterjm/fifa-autobuyer.svg?branch=master" /></a>
+      <a href="https://coveralls.io/github/hunterjm/fifa-autobuyer?branch=master"><img src="https://coveralls.io/repos/github/hunterjm/fifa-autobuyer/badge.svg?branch=master" /></a>
+    </section>
+
+    <section class="main-content">
+      {{ content }}
+
+      <footer class="site-footer">
+        {% if site.github.is_project_page %}
+          <span class="site-footer-owner"><a href="{{ site.github.repository_url }}">{{ site.title | default: site.github.repository_name }}</a> is maintained by <a href="{{ site.github.owner_url }}">{{ site.github.owner_name }}</a>.</span>
+        {% endif %}
+      </footer>
+    </section>
+
+    {% if site.google_analytics %}
+      <script type="text/javascript">
+        var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+        document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+      </script>
+      <script type="text/javascript">
+        try {
+          var pageTracker = _gat._getTracker("{{ site.google_analytics }}");
+        pageTracker._trackPageview();
+        } catch(err) {}
+      </script>
+    {% endif %}
+  </body>
+</html>
