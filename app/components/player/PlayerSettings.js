@@ -149,7 +149,7 @@ export class PlayerSettings extends Component {
                     </div>
                     <div className="option-value">
                       <input
-                        ref={buyInput => (this.buyInput = buyInput)} maxLength="9" name="buy" placeholder="Buy"
+                        ref={buyInput => (this.buyInput = buyInput)} maxLength="10" name="buy" placeholder="Buy"
                         value={buy} type="text" onChange={this.handlePriceChange.bind(this)} onBlur={this.handlePriceBlur.bind(this)}
                       />
                       <p className="error-message">{this.state.errors.buy}</p>
@@ -164,7 +164,7 @@ export class PlayerSettings extends Component {
                     </div>
                     <div className="option-value">
                       <input
-                        ref={sellInput => (this.sellInput = sellInput)} maxLength="3" name="sell" placeholder="Sell"
+                        ref={sellInput => (this.sellInput = sellInput)} maxLength="10" name="sell" placeholder="Sell"
                         value={sell} type="text" onChange={this.handlePriceChange.bind(this)} onBlur={this.handlePriceBlur.bind(this)}
                       />
                       <p className="error-message">{this.state.errors.sell}</p>
@@ -179,7 +179,7 @@ export class PlayerSettings extends Component {
                     </div>
                     <div className="option-value">
                       <input
-                        ref={binInput => (this.binInput = binInput)} maxLength="3" name="bin" placeholder="BIN"
+                        ref={binInput => (this.binInput = binInput)} maxLength="10" name="bin" placeholder="BIN"
                         value={bin} type="text" onChange={this.handlePriceChange.bind(this)} onBlur={this.handlePriceBlur.bind(this)}
                       />
                       <p className="error-message">{this.state.errors.bin}</p>
