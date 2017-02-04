@@ -29,7 +29,18 @@ export function bidCycle() {
     // Keep a manual record of our watched trades
     // let trades = _.keyBy(state.bid.watchlist, 'tradeId');
     dispatch(bidActions.setTrades(_.keyBy(state.bid.watchlist, 'tradeId')));
-    // Loop players
+
+    // Loop players for price update
+    for (const player of Object.values(playerList)) {
+      // refresh state every player
+      state = getState();
+      // Setup API - resets RPM every cycle
+      const settings = _.merge({}, state.settings, player.settings);
+      // Update prices every hour if auto update price is enabled
+      await dispatch(bidActions.updatePrice(player, settings));
+    }
+
+    // Loop players for bidding
     for (const player of Object.values(playerList)) {
       // refresh state every player
       state = getState();
@@ -56,9 +67,6 @@ export function bidCycle() {
         state.bid.watchlist,
         trade => Fut.getBaseId(trade.itemData.resourceId)
       )));
-
-      // Update prices every hour if auto update price is enabled
-      await dispatch(bidActions.updatePrice(player, settings));
 
       // Only bid if we don't already have a full trade pile and don't own too many of this player
       dispatch(bidActions.setBINStatus(!!state.bid.unassigned.length));
