@@ -45,10 +45,18 @@ export function login(account, tfCb = () => {}, captchaCb = () => {}) {
   return async dispatch => {
     try {
       const apiClient = init(account, tfCb, captchaCb);
-      await apiClient.login();
+      const user = await apiClient.login();
       metrics.track('Successful Login');
-      dispatch(getCredits(account.email));
-      dispatch(getPilesize(account.email));
+      dispatch(setCredits(user.userInfo.credits));
+      const piles = {
+        2: 'tradepile',
+        4: 'watchlist',
+      };
+      for (const { key, value } of user.pileSizeClientData.entries) {
+        if (piles[key] !== undefined) {
+          dispatch(setPilesize(piles[key], value));
+        }
+      }
       dispatch(push('/players'));
     } catch (e) {
       // this.setState({ twoFactor: false, loading: false, errors: { detail: e.message } });
