@@ -23,17 +23,12 @@ export function bidCycle() {
     // Increment cycle count
     dispatch(bidActions.setCycleCount(state.bid.cycles + 1));
 
-    // Get the player list
-    const playerList = state.player.list;
-
     // Keep a manual record of our watched trades
     // let trades = _.keyBy(state.bid.watchlist, 'tradeId');
     dispatch(bidActions.setTrades(_.keyBy(state.bid.watchlist, 'tradeId')));
 
     // Loop players for price update
-    for (const player of Object.values(playerList)) {
-      // refresh state every player
-      state = getState();
+    for (const player of Object.values(state.player.list)) {
       // Setup API - resets RPM every cycle
       const settings = _.merge({}, state.settings, player.settings);
       // Update prices every hour if auto update price is enabled
@@ -41,7 +36,8 @@ export function bidCycle() {
     }
 
     // Loop players for bidding
-    for (const player of Object.values(playerList)) {
+    state = getState();
+    for (const player of Object.values(state.player.list)) {
       // refresh state every player
       state = getState();
 
