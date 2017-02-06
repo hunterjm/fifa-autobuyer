@@ -8,7 +8,7 @@ export function bidCycle() {
     let state = getState();
 
     // Get unassigned and watchlist here only on first cycle
-    if (state.bid.cycles === 0) {
+    if (state.bid.cycles % 10 === 0) {
       await dispatch(bidActions.getUnassigned(state.account.email));
       await dispatch(bidActions.getWatchlist(state.account.email));
       state = getState();
@@ -69,7 +69,6 @@ export function bidCycle() {
       )));
 
       // Only bid if we don't already have a full trade pile and don't own too many of this player
-      dispatch(bidActions.setBINStatus(!!state.bid.unassigned.length));
       if (
         state.bid.bidding
         && state.bid.tradepile.length < state.account.pilesize.tradepile
@@ -101,6 +100,8 @@ export function bidCycle() {
         }
 
         // buy now goes directly to unassigned now
+        state = getState();
+        dispatch(bidActions.setBINStatus(!!state.bid.unassigned.length));
         await dispatch(bidActions.binNowToUnassigned());
 
         // Log sold items
