@@ -1,10 +1,8 @@
-/* eslint-disable no-unused-expressions */
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import sinon from 'sinon';
-import nock from 'nock';
 import { expect } from 'chai';
-import { mockLogin } from '../mocks/login';
+import Fut from 'fut-promise';
 import * as ApiUtil from '../../app/utils/ApiUtil';
 import * as actions from '../../app/actions/account';
 import * as types from '../../app/actions/accountTypes';
@@ -46,17 +44,26 @@ describe('actions', () => {
       });
       afterEach(() => {
         sandbox.restore();
-        nock.cleanAll();
       });
 
       it('should route to /players when login was success', async () => {
-        mockLogin();
-        const getPilesizeStub = sandbox.stub()
-          .returns({ entries: [{ key: 2, value: 30 }, { key: 4, value: 30 }] });
-        const getCreditsStub = sandbox.stub().returns({ credits: 1000 });
-        sandbox.stub(ApiUtil, 'getApi').returns({
-          getPilesize: getPilesizeStub,
-          getCredits: getCreditsStub
+        const loginStub = sandbox.stub(Fut.prototype, 'login').returns({
+          pileSizeClientData: {
+            entries: [{
+              key: 2,
+              value: 30
+            }, {
+              key: 4,
+              value: 30
+            }, {
+              key: 6,
+              value: 15
+            }]
+          },
+          userInfo: {
+            credits: 10243,
+            feature: { trade: 2 },
+          }
         });
         const account = {
           email,
@@ -67,6 +74,7 @@ describe('actions', () => {
         const store = mockStore({ account });
 
         await store.dispatch(actions.login(account));
+        expect(loginStub.calledOnce).to.eql(true);
         expect(store.getActions()).to.include({
           type: '@@router/CALL_HISTORY_METHOD',
           payload: { method: 'push', args: ['/players'] }
@@ -91,7 +99,9 @@ describe('actions', () => {
 
       it('should dispatch SET_PILESIZE when getPilesize is completed', async () => {
         // Mock pilesize response
-        const response = { entries: [{ key: 2, value: 30 }, { key: 4, value: 30 }] };
+        const response = {
+          entries: [{ key: 2, value: 30 }, { key: 4, value: 30 }, { key: 6, value: 15 }]
+        };
         const getPilesizeStub = sandbox.stub().returns(response);
         const getApiStub = sandbox.stub(ApiUtil, 'getApi').returns({
           getPilesize: getPilesizeStub

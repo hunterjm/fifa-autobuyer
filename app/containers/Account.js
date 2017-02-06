@@ -118,7 +118,7 @@ export class Account extends Component {
             () => {}
           );
         } catch (e) {
-          this.setState({ loading: false, errors: { detail: e.message } });
+          this.setState({ loading: false, twoFactor: false, errors: { detail: e.message } });
         }
       }
     }

@@ -101,6 +101,9 @@ export function snipe(player, settings) {
         state.bid.bidding
         // We have enough credits
         && state.account.credits > settings.minCredits
+        && state.account.credits > trade.buyNowPrice
+        // The buy price is the gte the BIN price
+        && player.price.buy >= trade.buyNowPrice
         // We are below our cap for this player
         && _.get(state, `bid.listed.${player.id}`, 0) < settings.maxCard
         // The card has at least one contract
@@ -195,7 +198,7 @@ export function placeBid(player, settings) {
           }
 
           // Make sure we aren't trying to spend more than we want to
-          if (bid <= player.price.buy) {
+          if (bid <= player.price.buy && bid <= state.account.credits) {
             // Bid!
             let tradeResult = {};
             try {
