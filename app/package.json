@@ -1,7 +1,7 @@
 {
   "name": "fifa-autobuyer",
   "productName": "FIFA Autobuyer",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Autobuyer for FIFA 17 Ultimate Team",
   "main": "./main.js",
   "author": {
