@@ -139,7 +139,7 @@ export class Overview extends Component {
       .reduce((p, c) => p.concat(Object.values(c)), [])
       .filter(trade => trade.bought > 0 && trade.sold > 0);
     const lifetimeProfit = lifetimeTrades
-      .reduce((p, c) => p + (c.sold - c.bought), 0);
+      .reduce((p, c) => p + ((c.sold * 0.95) - c.bought), 0);
 
     return (
       <div className="details bidding-screen">
