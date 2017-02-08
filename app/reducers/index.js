@@ -6,6 +6,7 @@ import { player } from './player';
 import { history } from './history';
 import { settings } from './settings';
 import { bid } from './bid';
+import { watch } from './watch';
 
 const rootReducer = combineReducers({
   app,
@@ -14,6 +15,7 @@ const rootReducer = combineReducers({
   history,
   settings,
   bid,
+  watch,
   routing
 });
 

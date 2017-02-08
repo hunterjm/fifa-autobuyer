@@ -519,7 +519,7 @@ describe('actions', () => {
         const store = mockStore(initialState);
         await store.dispatch(actions.placeBid(player, settings));
         expect(apiStub.calledOnce).to.eql(true);
-        expect(highestPriceStub.calledOnce).to.eql(true);
+        expect(highestPriceStub.calledTwice).to.eql(true);
         const cleanActions = _.filter(store.getActions(), a => a.type !== types.ADD_MESSAGE);
         expect(cleanActions).to.be.eql(
           [
@@ -587,7 +587,7 @@ describe('actions', () => {
         const store = mockStore(initialState);
         await store.dispatch(actions.placeBid(player, settings));
         expect(apiStub.calledOnce).to.eql(true);
-        expect(highestPriceStub.called).to.eql(false);
+        expect(highestPriceStub.calledOnce).to.eql(true);
         const cleanActions = _.filter(store.getActions(), a => a.type !== types.ADD_MESSAGE);
         expect(cleanActions).to.be.eql(
           [
@@ -644,7 +644,7 @@ describe('actions', () => {
         await store.dispatch(actions.placeBid(player, settings));
         expect(apiStub.calledOnce).to.eql(true);
         expect(searchStub.calledOnce).to.eql(true);
-        expect(highestPriceStub.calledOnce).to.eql(true);
+        expect(highestPriceStub.calledTwice).to.eql(true);
         expect(bidStub.calledOnce).to.eql(true);
         const cleanActions = _.filter(store.getActions(), a => a.type !== types.ADD_MESSAGE);
         expect(cleanActions.length).to.eql(0);
