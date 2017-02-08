@@ -197,6 +197,12 @@ export function placeBid(player, settings) {
             bid = trade.startingBid;
           }
 
+          // If the next step up is our max, go ahead and bid max
+          const nextBid = Fut.calculateNextHigherPrice(bid);
+          if (nextBid === Fut.calculateValidPrice(player.price.buy)) {
+            bid = nextBid;
+          }
+
           // Make sure we aren't trying to spend more than we want to
           if (bid <= player.price.buy && bid <= state.account.credits) {
             // Bid!

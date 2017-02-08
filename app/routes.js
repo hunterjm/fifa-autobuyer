@@ -6,6 +6,7 @@ import ConnectedPlayers from './containers/Players';
 import ConnectedPlayerSearch from './components/player/PlayerSearch';
 import ConnectedPlayerDetails from './components/player/PlayerDetails';
 import ConnectedPlayerHistory from './components/player/PlayerHistory';
+import ConnectedPlayerWatch from './components/player/PlayerWatch';
 import ConnectedPlayerSettings from './components/player/PlayerSettings';
 import ConnectedBidOverview from './components/bid/Overview';
 import ConnectedBidLogs from './components/bid/Logs';
@@ -21,6 +22,7 @@ export default (
       <Route path=":id">
         <IndexRoute component={ConnectedPlayerDetails} />
         <Route path="history" component={ConnectedPlayerHistory} />
+        <Route path="watch" component={ConnectedPlayerWatch} />
         <Route path="settings" component={ConnectedPlayerSettings} />
       </Route>
     </Route>
