@@ -63,6 +63,7 @@ export class PlayerHistory extends Component {
     const meanSold = ss.mean(soldPrices) || 'N/A';
     const medianSold = ss.median(soldPrices) || 'N/A';
     const meanSoldTime = ss.mean(soldTime) || 'N/A';
+    const totalProfit = ss.sum(profits) || 'N/A';
     const meanProfit = ss.mean(profits) || 'N/A';
 
     const tabDailyClasses = classNames({
@@ -232,6 +233,10 @@ export class PlayerHistory extends Component {
                       <tr>
                         <td>Completed Trades</td>
                         <td>{both.length}</td>
+                      </tr>
+                      <tr>
+                        <td>Lifetime Profit</td>
+                        <td>{totalProfit}</td>
                       </tr>
                       <tr>
                         <td>Average Profit per Trade</td>

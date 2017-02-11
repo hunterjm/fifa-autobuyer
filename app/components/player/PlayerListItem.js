@@ -5,6 +5,7 @@ import { remote } from 'electron';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import ss from 'simple-statistics';
 import numeral from 'numeral';
 import * as PlayerActions from '../../actions/player';
 
@@ -57,6 +58,11 @@ export class PlayerListItem extends Component {
       </OverlayTrigger>
     );
 
+    const history = Object.values(this.props.history);
+    const both = history.filter(trade => trade.bought > 0 && trade.sold > 0);
+    const profits = both.map(trade => (trade.sold * 0.95) - trade.bought);
+    const totalProfit = ss.sum(profits) || 'N/A';
+
     return (
       <div ref={node => (this.node = node)}>
         <li
@@ -71,7 +77,7 @@ export class PlayerListItem extends Component {
               {player.name}
             </div>
             <div className="image">
-              {player.rating} | {player.position}
+              profit: {numeral(totalProfit).format('0,0')}
               <br />
               {numeral(_.get(player, 'price.buy')).format('0,0')}/
               {numeral(_.get(player, 'price.sell')).format('0,0')}/
@@ -94,6 +100,7 @@ PlayerListItem.propTypes = {
     id: PropTypes.int,
     name: PropTypes.string
   }),
+  history: PropTypes.shape({}),
   remove: PropTypes.func.isRequired,
 };
 

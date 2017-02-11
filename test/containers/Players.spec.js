@@ -163,7 +163,8 @@ describe('containers', () => {
             67276528: totwPlayer
           },
           search: {}
-        }
+        },
+        history: {}
       });
       expect(playerCards).to.have.length(2);
     });

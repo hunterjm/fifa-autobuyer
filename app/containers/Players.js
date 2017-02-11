@@ -52,7 +52,7 @@ export class Players extends Component {
 
     const players = _.map(
       _.get(this.props, 'player.list', {}),
-      player => <ConnectedPlayerListItem key={player.id} player={player} />
+      player => <ConnectedPlayerListItem key={player.id} player={player} history={_.get(this.props.history, player.id, {})} /> // eslint-disable-line max-len
     );
 
     const overviewClasses = classNames({
@@ -278,6 +278,7 @@ export class Players extends Component {
 Players.propTypes = {
   children: PropTypes.element.isRequired,
   player: PropTypes.shape({}),
+  history: PropTypes.shape({}),
   location: PropTypes.shape({
     pathname: PropTypes.string
   }),
@@ -294,6 +295,7 @@ Players.contextTypes = {
 function mapStateToProps(state) {
   return {
     player: state.player,
+    history: state.history,
     bidding: state.bid.bidding
   };
 }
