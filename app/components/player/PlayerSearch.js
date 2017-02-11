@@ -3,6 +3,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 import _ from 'lodash';
+import { shell } from 'electron';
 import PlayerCard from './SmallPlayerCard';
 import * as PlayerActions from '../../actions/player';
 
@@ -185,6 +186,16 @@ export class PlayerSearch extends Component {
       results = (
         <div className="no-results">
           <h2>Search for players above.</h2>
+          <div>
+            This autobuyer is free and open source (unless you bought it off eBay from
+            <a onClick={() => shell.openExternal('http://www.ebay.com/usr/youssekafe_0')}> this guy</a>).
+          </div>
+          <div>Please consider donating to help support development of new features.</div>
+          <div>
+            <a onClick={() => shell.openExternal('https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=hunterjm%40gmail%2ecom&lc=US&item_name=FIFA%20Autobuyer&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted')}>
+              <img src="https://img.shields.io/badge/paypal-donate-yellow.svg" alt="Donate Here" width="94" height="20" />
+            </a>
+          </div>
         </div>
       );
     }
