@@ -52,7 +52,7 @@ export class Players extends Component {
 
     const players = _.map(
       _.get(this.props, 'player.list', {}),
-      player => <ConnectedPlayerListItem key={player.id} player={player} history={this.props.history[player.id]} /> // eslint-disable-line max-len
+      player => <ConnectedPlayerListItem key={player.id} player={player} history={_.get(this.props.history, player.id, {})} /> // eslint-disable-line max-len
     );
 
     const overviewClasses = classNames({

@@ -39,7 +39,7 @@ function setup(active = false) {
       router: React.PropTypes.object
     }
   };
-  const component = shallow(<PlayerListItem player={player} {...actions} />, context);
+  const component = shallow(<PlayerListItem player={player} history={{}} {...actions} />, context);
   return {
     component,
     actions,
@@ -64,7 +64,7 @@ describe('components', () => {
         const { stats } = setup();
         expect(stats).to.have.length(1);
         expect(stats.text()).to.equal(
-          `${player.rating} | ${player.position}${numeral(_.get(player, 'price.buy')).format('0,0')}/${numeral(_.get(player, 'price.sell')).format('0,0')}/${numeral(_.get(player, 'price.bin')).format('0,0')}`
+          `profit: 0${numeral(_.get(player, 'price.buy')).format('0,0')}/${numeral(_.get(player, 'price.sell')).format('0,0')}/${numeral(_.get(player, 'price.bin')).format('0,0')}`
         );
       });
 
