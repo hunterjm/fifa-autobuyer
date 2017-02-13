@@ -77,7 +77,8 @@ export class Settings extends Component {
 
   render() {
     const {
-      rpm, minCredits, maxCard, autoStop, snipeOnly, autoUpdate, buy, sell, bin, relistAll
+      rpm, minCredits, maxCard, autoStop, snipeOnly,
+      skipTutorial, autoUpdate, buy, sell, bin, relistAll
      } = this.props.settings;
     return (
       <div className="preferences">
@@ -147,6 +148,18 @@ export class Settings extends Component {
                 <input
                   ref={snipeOnlyInput => (this.snipeOnlyInput = snipeOnlyInput)} name="snipeOnly"
                   checked={snipeOnly} type="checkbox" onChange={this.handleChange.bind(this)}
+                />
+              </div>
+            </div>
+            <div className="option">
+              <div className="option-name">
+                <label htmlFor="skipTutorial">Skip Tutorial</label>
+                <p><small>Automatically skip the tutorial on startup</small></p>
+              </div>
+              <div className="option-value">
+                <input
+                  ref={skipTutorialInput => (this.skipTutorialInput = skipTutorialInput)} name="skipTutorial"
+                  checked={skipTutorial} type="checkbox" onChange={this.handleChange.bind(this)}
                 />
               </div>
             </div>
@@ -241,6 +254,7 @@ Settings.propTypes = {
     maxCard: PropTypes.string,
     autoStop: PropTypes.string,
     snipeOnly: PropTypes.bool,
+    skipTutorial: PropTypes.bool,
     autoUpdate: PropTypes.bool,
     buy: PropTypes.string,
     sell: PropTypes.string,
