@@ -195,20 +195,24 @@ export class Players extends Component {
 
     return (
       <div className="containers">
-        { this.props.skipTutorial ? null :
-        <Joyride
-          ref={c => (this.joyride = c)}
-          steps={steps}
-          stepIndex={0}
-          autoStart={!Object.keys(players).length}
-          type="continuous"
-          showSkipButton
-          showStepsProgress
-          disableOverlay
-          run
-          locale={{ back: 'Back', close: 'Close', last: 'Done', next: 'Next', skip: 'Skip' }}
-        />
-    }
+        {
+          this.props.skipTutorial
+          ?
+            null
+          :
+            <Joyride
+              ref={c => (this.joyride = c)}
+              steps={steps}
+              stepIndex={0}
+              autoStart={!Object.keys(players).length}
+              type="continuous"
+              showSkipButton
+              showStepsProgress
+              disableOverlay
+              run
+              locale={{ back: 'Back', close: 'Close', last: 'Done', next: 'Next', skip: 'Skip' }}
+            />
+        }
         <ConnectedHeader hideLogin={false} />
         <div className="containers-body">
           <div className="sidebar">
