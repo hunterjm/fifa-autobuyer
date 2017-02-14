@@ -211,8 +211,8 @@ export class Account extends Component {
             <div className="content">
               <h1>Connect to EA Sports</h1>
               <p>
-                Automate your transfer market bidding by connecting
-                your Origin account to FIFA Autobuyer.
+              Automate your transfer market bidding by connecting
+              your Origin account to FIFA Autobuyer.
               </p>
             </div>
           </div>
