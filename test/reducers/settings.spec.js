@@ -12,6 +12,7 @@ describe('reducers', () => {
         maxCard: '10',
         autoStop: '0',
         snipeOnly: false,
+        skipTutorial: false,
         autoUpdate: true,
         buy: '90',
         sell: '100',

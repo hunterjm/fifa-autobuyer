@@ -195,18 +195,24 @@ export class Players extends Component {
 
     return (
       <div className="containers">
-        <Joyride
-          ref={c => (this.joyride = c)}
-          steps={steps}
-          stepIndex={0}
-          autoStart={!Object.keys(players).length}
-          type="continuous"
-          showSkipButton
-          showStepsProgress
-          disableOverlay
-          run
-          locale={{ back: 'Back', close: 'Close', last: 'Done', next: 'Next', skip: 'Skip' }}
-        />
+        {
+          this.props.skipTutorial
+          ?
+            null
+          :
+            <Joyride
+              ref={c => (this.joyride = c)}
+              steps={steps}
+              stepIndex={0}
+              autoStart={!Object.keys(players).length}
+              type="continuous"
+              showSkipButton
+              showStepsProgress
+              disableOverlay
+              run
+              locale={{ back: 'Back', close: 'Close', last: 'Done', next: 'Next', skip: 'Skip' }}
+            />
+        }
         <ConnectedHeader hideLogin={false} />
         <div className="containers-body">
           <div className="sidebar">
@@ -283,6 +289,7 @@ Players.propTypes = {
     pathname: PropTypes.string
   }),
   bidding: PropTypes.bool,
+  skipTutorial: PropTypes.bool,
   start: PropTypes.func,
   stop: PropTypes.func,
   clear: PropTypes.func,
@@ -296,7 +303,8 @@ function mapStateToProps(state) {
   return {
     player: state.player,
     history: state.history,
-    bidding: state.bid.bidding
+    bidding: state.bid.bidding,
+    skipTutorial: state.settings.skipTutorial
   };
 }
 
