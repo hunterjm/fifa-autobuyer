@@ -193,7 +193,6 @@ export function placeBid(player, settings) {
           && trade.itemData.contract > 0
         ) {
           // Get the latest status of this trade
-          api = getApi(state.account.email, 0);
           let latestTrade;
           try {
             const status = await api.getStatus([trade.tradeId]);
@@ -220,15 +219,15 @@ export function placeBid(player, settings) {
           if (latestTrade.expires > 0 && bid <= player.price.buy && bid <= state.account.credits) {
             // Bid!
             let tradeResult = {};
+            api = getApi(state.account.email, 0);
             try {
+              // No delay between status and bid
               const placeBidResponse = await api.placeBid(latestTrade.tradeId, bid);
               dispatch(setCredits(placeBidResponse.credits));
               tradeResult = _.get(placeBidResponse, 'auctionInfo[0]', {});
             } catch (e) {
               dispatch(addMessage('error', `Error placing bid on ${player.name}`, e));
             }
-
-            // Reset RPM for this stuff
             api = getApi(state.account.email, settings.rpm);
             // tradeResult = {
             //   bidState: 'highest',
@@ -254,13 +253,10 @@ export function placeBid(player, settings) {
               // TODO: do something about this
               dispatch(addMessage('warn', `Something happened when trying to bid on ${player.name}`));
             }
+          } else if (latestTrade.expires === -1 && latestTrade.currentBid < player.price.bid) {
+            dispatch(addMessage('warn', `TOO SLOW: Trade has expired for ${player.name} (sold for ${latestTrade.currentBid})`));
           } else {
-            if (latestTrade.expires === -1 && latestTrade.currentBid < player.price.bid) {
-              dispatch(addMessage('warn', `TOO SLOW: Trade has expired for ${player.name} (sold for ${latestTrade.currentBid})`));
-            } else {
-              dispatch(addMessage('log', `Required bid (${bid}) is more than we are willing to pay for ${player.name} (${player.price.buy})`));
-            }
-            api = getApi(state.account.email, settings.rpm);
+            dispatch(addMessage('log', `Required bid (${bid}) is more than we are willing to pay for ${player.name} (${player.price.buy})`));
           }
         }
       }
