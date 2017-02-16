@@ -80,9 +80,6 @@ export function bidCycle() {
         await dispatch(bidActions.placeBid(player, settings));
       }
 
-      // Update items always when bidding
-      // await dispatch(bidActions.updateItems(player, settings));
-
       state = getState();
       if (state.bid.bidding) {
         if (!settings.snipeOnly) {
@@ -96,8 +93,6 @@ export function bidCycle() {
         }
 
         // buy now goes directly to unassigned now
-        state = getState();
-        dispatch(bidActions.setBINStatus(!!state.bid.unassigned.length));
         await dispatch(bidActions.binNowToUnassigned());
 
         // Log sold items
