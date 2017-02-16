@@ -167,7 +167,7 @@ describe('actions', () => {
         const settings = { minCredits: 1000, maxCard: 5 };
         const store = mockStore(initialState);
         await store.dispatch(actions.snipe(player, settings));
-        expect(apiStub.calledOnce).to.eql(true);
+        expect(apiStub.callCount).to.eql(3);
         expect(searchStub.calledOnce).to.eql(true);
         const cleanActions = _.filter(store.getActions(), a => a.type !== types.ADD_MESSAGE);
         expect(cleanActions.length).to.eql(0);
@@ -191,7 +191,7 @@ describe('actions', () => {
         const settings = { minCredits: 1000, maxCard: 5 };
         const store = mockStore(initialState);
         await store.dispatch(actions.snipe(player, settings));
-        expect(apiStub.calledOnce).to.eql(true);
+        expect(apiStub.callCount).to.eql(3);
         expect(searchStub.calledOnce).to.eql(true);
         const cleanActions = _.filter(store.getActions(), a => a.type !== types.ADD_MESSAGE);
         expect(cleanActions.length).to.eql(0);
@@ -223,7 +223,7 @@ describe('actions', () => {
         const settings = { minCredits: 10000, maxCard: 5 };
         const store = mockStore(initialState);
         await store.dispatch(actions.snipe(player, settings));
-        expect(apiStub.calledOnce).to.eql(true);
+        expect(apiStub.callCount).to.eql(3);
         expect(searchStub.calledOnce).to.eql(true);
         expect(bidStub.called).to.eql(false);
         const cleanActions = _.filter(store.getActions(), a => a.type !== types.ADD_MESSAGE);
@@ -256,7 +256,7 @@ describe('actions', () => {
         const settings = { minCredits: 1000, maxCard: 5 };
         const store = mockStore(initialState);
         await store.dispatch(actions.snipe(player, settings));
-        expect(apiStub.calledOnce).to.eql(true);
+        expect(apiStub.callCount).to.eql(3);
         expect(searchStub.calledOnce).to.eql(true);
         expect(bidStub.called).to.eql(false);
         const cleanActions = _.filter(store.getActions(), a => a.type !== types.ADD_MESSAGE);
@@ -300,7 +300,7 @@ describe('actions', () => {
         const settings = { minCredits: 1000, maxCard: 5 };
         const store = mockStore(initialState);
         await store.dispatch(actions.snipe(player, settings));
-        expect(apiStub.calledOnce).to.eql(true);
+        expect(apiStub.callCount).to.eql(3);
         expect(searchStub.calledOnce).to.eql(true);
         expect(bidStub.calledOnce).to.eql(true);
         /*
@@ -354,7 +354,7 @@ describe('actions', () => {
         const settings = { minCredits: 1000, maxCard: 5 };
         const store = mockStore(initialState);
         await store.dispatch(actions.snipe(player, settings));
-        expect(apiStub.calledOnce).to.eql(true);
+        expect(apiStub.callCount).to.eql(3);
         expect(searchStub.calledOnce).to.eql(true);
         expect(bidStub.calledOnce).to.eql(true);
         /*
@@ -397,7 +397,7 @@ describe('actions', () => {
         const settings = { minCredits: 1000, maxCard: 5 };
         const store = mockStore(initialState);
         await store.dispatch(actions.snipe(player, settings));
-        expect(apiStub.calledOnce).to.eql(true);
+        expect(apiStub.callCount).to.eql(3);
         expect(searchStub.calledOnce).to.eql(true);
         expect(bidStub.calledOnce).to.eql(true);
         const cleanActions = _.filter(store.getActions(), a => a.type !== types.ADD_MESSAGE);
@@ -518,7 +518,7 @@ describe('actions', () => {
         const settings = { minCredits: 10000, maxCard: 5, snipeOnly: false };
         const store = mockStore(initialState);
         await store.dispatch(actions.placeBid(player, settings));
-        expect(apiStub.calledOnce).to.eql(true);
+        expect(apiStub.callCount).to.eql(3);
         expect(highestPriceStub.calledTwice).to.eql(true);
         const cleanActions = _.filter(store.getActions(), a => a.type !== types.ADD_MESSAGE);
         expect(cleanActions).to.be.eql(
@@ -586,7 +586,7 @@ describe('actions', () => {
         const settings = { minCredits: 10000, maxCard: 5, snipeOnly: false };
         const store = mockStore(initialState);
         await store.dispatch(actions.placeBid(player, settings));
-        expect(apiStub.calledOnce).to.eql(true);
+        expect(apiStub.callCount).to.eql(3);
         expect(highestPriceStub.calledOnce).to.eql(true);
         const cleanActions = _.filter(store.getActions(), a => a.type !== types.ADD_MESSAGE);
         expect(cleanActions).to.be.eql(
@@ -642,7 +642,7 @@ describe('actions', () => {
         const settings = { minCredits: 10000, maxCard: 5, snipeOnly: false };
         const store = mockStore(initialState);
         await store.dispatch(actions.placeBid(player, settings));
-        expect(apiStub.calledOnce).to.eql(true);
+        expect(apiStub.callCount).to.eql(3);
         expect(searchStub.calledOnce).to.eql(true);
         expect(highestPriceStub.calledTwice).to.eql(true);
         expect(bidStub.calledOnce).to.eql(true);

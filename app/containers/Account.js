@@ -232,7 +232,8 @@ Account.propTypes = {
     platform: PropTypes.string,
     code: PropTypes.string,
   }),
-  next: PropTypes.func // only used for tests
+  next: PropTypes.func, // only used for tests
+  errors: PropTypes.shape({})
 };
 
 Account.contextTypes = {
