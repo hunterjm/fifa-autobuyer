@@ -158,7 +158,10 @@ export class Settings extends Component {
               <div className="option-name">
                 <label htmlFor="bidUntilMin">Bid Until Min.</label>
                 <p>
-                  <small>Maximum number of minutes before auction expires that you would like to bid on trades</small>
+                  <small>
+                    Maximum number of minutes before auction
+                    expires that you would like to bid on trades
+                  </small>
                 </p>
               </div>
               <div className="option-value">
