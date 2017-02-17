@@ -3,7 +3,9 @@ import _ from 'lodash';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import Fut from 'fut-promise';
+import validator from 'validator';
 import Header from './Header';
+
 import * as PlayerActions from '../../actions/player';
 
 export class PlayerSettings extends Component {
@@ -49,6 +51,9 @@ export class PlayerSettings extends Component {
       errors.bin = 'Must be a valid price';
     }
 
+    if (!validator.isNumeric(this.player.settings.bidUntilMin)) {
+      errors.binUntilMin = 'Must be a numeric';
+    }
     return errors;
   }
 
@@ -79,8 +84,15 @@ export class PlayerSettings extends Component {
     ) });
   }
 
+  handleBlur(event) {
+    this.setState({ errors: _.omitBy(
+      this.validate(),
+      (val, key) => key !== event.target.name && !_.get(this.player.settings, `[${key}].length`, 0)
+    ) });
+  }
+
   render() {
-    const { maxCard, snipeOnly, autoUpdate, relistAll } = _.get(this.player, 'settings', {});
+    const { maxCard, snipeOnly, bidUntilMin, autoUpdate, relistAll } = _.get(this.player, 'settings', {});
     const { buy, sell, bin } = _.get(this.player, 'price', {});
     const defaultSettings = _.get(this.props, 'settings', {});
     return (
@@ -122,6 +134,22 @@ export class PlayerSettings extends Component {
                         checked={snipeOnly !== undefined ? snipeOnly : defaultSettings.snipeOnly}
                         type="checkbox" onChange={this.handleChange.bind(this)}
                       />
+                    </div>
+                  </div>
+                  <div className="option">
+                    <div className="option-name">
+                      <label htmlFor="bidUntilMin">Bid Until Min.</label>
+                      <p>
+                        <small>Maximum number of minutes before auction expires that you would like to bid on trades</small>
+                      </p>
+                    </div>
+                    <div className="option-value">
+                      <input
+                        ref={bidUntilMinInput => (this.bidUntilMinInput = bidUntilMinInput)} name="bidUntilMin"
+                        placeholder={defaultSettings.bidUntilMin} value={bidUntilMin || ''} type="text"
+                        onChange={this.handleChange.bind(this)} onBlur={this.handleBlur.bind(this)}
+                      />
+                      <p className="error-message">{this.state.errors.bidUntilMin}</p>
                     </div>
                   </div>
                 </div>
