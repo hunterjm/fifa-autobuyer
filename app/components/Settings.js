@@ -279,7 +279,8 @@ Settings.propTypes = {
     sell: PropTypes.string,
     bin: PropTypes.string,
     relistAll: PropTypes.bool
-  })
+  }),
+  errors: PropTypes.shape({})
 };
 
 Settings.contextTypes = {

@@ -250,7 +250,8 @@ PlayerSettings.propTypes = {
   player: PropTypes.shape({
     list: PropTypes.shape({})
   }),
-  settings: PropTypes.shape({})
+  settings: PropTypes.shape({}),
+  errors: PropTypes.shape({})
 };
 
 PlayerSettings.contextTypes = {

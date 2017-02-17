@@ -78,7 +78,7 @@ export function setBINStatus(won) {
 export function snipe(player, settings) {
   return async (dispatch, getState) => {
     let state = getState();
-    const api = getApi(state.account.email);
+    let api = getApi(state.account.email);
     dispatch(addMessage('log', `Preparing to snipe ${player.name}...`));
     // Snipe
     const binFilter = _.merge({}, filter, {
@@ -93,6 +93,8 @@ export function snipe(player, settings) {
       binResponse = { auctionInfo: [] };
     }
     dispatch(addMessage('log', `${binResponse.auctionInfo.length} BIN found for ${player.name}...`));
+    // drop RPM for sniping
+    api = getApi(state.account.email, 60);
     for (const trade of binResponse.auctionInfo) {
       // refresh state every trade
       state = getState();
@@ -140,6 +142,7 @@ export function snipe(player, settings) {
         }
       }
     }
+    api = getApi(state.account.email, settings.rpm);
   };
 }
 
@@ -147,7 +150,7 @@ export function placeBid(player, settings) {
   return async (dispatch, getState) => {
     if (!settings.snipeOnly) {
       let state = getState();
-      const api = getApi(state.account.email);
+      let api = getApi(state.account.email);
       dispatch(addMessage('log', `Getting ready to search auctions for ${player.name}...`));
       const bidFilter = _.merge({}, filter, {
         definitionId: player.id,
@@ -191,12 +194,21 @@ export function placeBid(player, settings) {
           // The card has at least one contract
           && trade.itemData.contract > 0
         ) {
+          // Get the latest status of this trade
+          let latestTrade;
+          try {
+            const status = await api.getStatus([trade.tradeId]);
+            dispatch(setCredits(status.credits));
+            latestTrade = _.get(status, 'auctionInfo[0]', trade);
+          } catch (e) {
+            latestTrade = trade;
+          }
           // Set our bid
           let bid;
-          if (trade.currentBid) {
-            bid = Fut.calculateNextHigherPrice(trade.currentBid);
+          if (latestTrade.currentBid) {
+            bid = Fut.calculateNextHigherPrice(latestTrade.currentBid);
           } else {
-            bid = trade.startingBid;
+            bid = latestTrade.startingBid;
           }
 
           // If the next step up is our max, go ahead and bid max
@@ -206,16 +218,19 @@ export function placeBid(player, settings) {
           }
 
           // Make sure we aren't trying to spend more than we want to
-          if (bid <= player.price.buy && bid <= state.account.credits) {
+          if (latestTrade.expires > 0 && bid <= player.price.buy && bid <= state.account.credits) {
             // Bid!
             let tradeResult = {};
+            api = getApi(state.account.email, 0);
             try {
-              const placeBidResponse = await api.placeBid(trade.tradeId, bid);
+              // No delay between status and bid
+              const placeBidResponse = await api.placeBid(latestTrade.tradeId, bid);
               dispatch(setCredits(placeBidResponse.credits));
               tradeResult = _.get(placeBidResponse, 'auctionInfo[0]', {});
             } catch (e) {
               dispatch(addMessage('error', `Error placing bid on ${player.name}`, e));
             }
+            api = getApi(state.account.email, settings.rpm);
             // tradeResult = {
             //   bidState: 'highest',
             //   tradeId: trade.tradeId,
@@ -240,6 +255,8 @@ export function placeBid(player, settings) {
               // TODO: do something about this
               dispatch(addMessage('warn', `Something happened when trying to bid on ${player.name}`));
             }
+          } else if (latestTrade.expires === -1 && latestTrade.currentBid < player.price.bid) {
+            dispatch(addMessage('warn', `TOO SLOW: Trade has expired for ${player.name} (sold for ${latestTrade.currentBid})`));
           } else {
             dispatch(addMessage('log', `Required bid (${bid}) is more than we are willing to pay for ${player.name} (${player.price.buy})`));
           }
@@ -380,7 +397,7 @@ export function continueTracking(settings) {
   return async (dispatch, getState) => {
     let state = getState();
     const api = getApi(state.account.email);
-    const tradeIds = Object.keys(state.bid.trades);
+    const tradeIds = Object.keys(state.bid.trades).filter(id => id > 0);
     if (!settings.snipeOnly && tradeIds.length) {
       dispatch(addMessage('log', `Updating status on ${tradeIds.length} active trades...`));
       let statuses;
