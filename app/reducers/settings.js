@@ -7,6 +7,7 @@ export const initialState = {
   maxCard: '10',
   autoStop: '0',
   snipeOnly: false,
+  bidUntilMin: 5,
   skipTutorial: false,
   autoUpdate: true,
   buy: '90',

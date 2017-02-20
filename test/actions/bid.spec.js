@@ -476,7 +476,7 @@ describe('actions', () => {
         const searchStub = sandbox.stub().returns({ auctionInfo: [{
           tradeId: 12345,
           buyNowPrice: 1,
-          expires: 250,
+          expires: 600,
           currentBid: 1,
           itemData: {
             contract: 1
@@ -515,7 +515,7 @@ describe('actions', () => {
           }
         };
 
-        const settings = { minCredits: 10000, maxCard: 5, snipeOnly: false };
+        const settings = { minCredits: 10000, maxCard: 5, snipeOnly: false, bidUntilMin: 10 };
         const store = mockStore(initialState);
         await store.dispatch(actions.placeBid(player, settings));
         expect(apiStub.callCount).to.eql(3);
@@ -583,7 +583,7 @@ describe('actions', () => {
           }
         };
 
-        const settings = { minCredits: 10000, maxCard: 5, snipeOnly: false };
+        const settings = { minCredits: 10000, maxCard: 5, snipeOnly: false, bidUntilMin: 5 };
         const store = mockStore(initialState);
         await store.dispatch(actions.placeBid(player, settings));
         expect(apiStub.callCount).to.eql(3);
@@ -639,7 +639,7 @@ describe('actions', () => {
           }
         };
 
-        const settings = { minCredits: 10000, maxCard: 5, snipeOnly: false };
+        const settings = { minCredits: 10000, maxCard: 5, snipeOnly: false, bidUntilMin: 5 };
         const store = mockStore(initialState);
         await store.dispatch(actions.placeBid(player, settings));
         expect(apiStub.callCount).to.eql(3);
@@ -1489,7 +1489,7 @@ describe('actions', () => {
           bidState: 'outbid'
         }, {
           tradeId: 3,
-          expires: 100,
+          expires: 600,
           itemData: {
             id: 3,
             resourceId: 444,
@@ -1555,6 +1555,9 @@ describe('actions', () => {
                   buy: 600,
                   sell: 700,
                   bin: 1000
+                },
+                settings: {
+                  bidUntilMin: 10
                 }
               }
             }
