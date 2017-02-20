@@ -158,7 +158,7 @@ export class Account extends Component {
       fields = (
         <div key="initial-credentials">
           <input
-            ref={emailInput => (this.emailInput = emailInput)} maxLength="30" name="email" placeholder="Email"
+            ref={emailInput => (this.emailInput = emailInput)} maxLength="50" name="email" placeholder="Email"
             value={email || ''} type="text" onChange={this.handleChange.bind(this)} onBlur={this.handleBlur.bind(this)}
           />
           <p className="error-message">{this.state.errors.email}</p>
