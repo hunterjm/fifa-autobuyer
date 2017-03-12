@@ -94,7 +94,7 @@ export function snipe(player, settings) {
     }
     dispatch(addMessage('log', `${binResponse.auctionInfo.length} BIN found for ${player.name}...`));
     // drop RPM for sniping
-    api = getApi(state.account.email, 60);
+    api = getApi(state.account.email, settings.rpm > 20 ? settings.rpm : 20);
     for (const trade of binResponse.auctionInfo) {
       // refresh state every trade
       state = getState();
@@ -157,19 +157,21 @@ export function placeBid(player, settings) {
         macr: player.price.buy,
       });
       let searchResults = 0;
-      let last5Min = [];
+      let resultsWithinTimeframe = [];
       try {
         const bidResponse = await api.search(bidFilter);
         searchResults = bidResponse.auctionInfo.length;
-        last5Min = _.filter(bidResponse.auctionInfo, trade => trade.expires <= 300);
+        resultsWithinTimeframe = _.filter(
+          bidResponse.auctionInfo,
+          trade => trade.expires <= (settings.bidUntilMin * 60));
       } catch (e) {
         dispatch(addMessage('error', `Error searching auctions for ${player.name}`, e));
       }
-      dispatch(addMessage('log', `${searchResults} results (${last5Min.length} in last 5 minutes)`));
-      if (searchResults > 0 && last5Min.length === searchResults) {
+      dispatch(addMessage('log', `${searchResults} results (${resultsWithinTimeframe.length} in last ${settings.bidUntilMin} minutes)`));
+      if (searchResults > 0 && resultsWithinTimeframe.length === searchResults) {
         // TODO: Increment page number and search again
       }
-      for (const trade of last5Min) {
+      for (const trade of resultsWithinTimeframe) {
         // refresh state every trade
         state = getState();
         const listed = _.get(state.bid.listed, player.id, 0);

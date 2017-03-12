@@ -57,6 +57,9 @@ export class Settings extends Component {
       errors.bin = 'Must be numeric';
     }
 
+    if (!validator.isNumeric(this.props.settings.bidUntilMin)) {
+      errors.bidUntilMin = 'Must be numeric';
+    }
     return errors;
   }
 
@@ -77,7 +80,7 @@ export class Settings extends Component {
 
   render() {
     const {
-      rpm, minCredits, maxCard, autoStop, snipeOnly,
+      rpm, minCredits, maxCard, autoStop, snipeOnly, bidUntilMin,
       skipTutorial, autoUpdate, buy, sell, bin, relistAll
      } = this.props.settings;
     return (
@@ -149,6 +152,24 @@ export class Settings extends Component {
                   ref={snipeOnlyInput => (this.snipeOnlyInput = snipeOnlyInput)} name="snipeOnly"
                   checked={snipeOnly} type="checkbox" onChange={this.handleChange.bind(this)}
                 />
+              </div>
+            </div>
+            <div className="option">
+              <div className="option-name">
+                <label htmlFor="bidUntilMin">Bid Until Min.</label>
+                <p>
+                  <small>
+                    Maximum number of minutes before auction
+                    expires that you would like to bid on trades
+                  </small>
+                </p>
+              </div>
+              <div className="option-value">
+                <input
+                  ref={bidUntilMinInput => (this.bidUntilMinInput = bidUntilMinInput)} name="bidUntilMin"
+                  value={bidUntilMin || ''} type="text" onChange={this.handleChange.bind(this)} onBlur={this.handleBlur.bind(this)}
+                />
+                <p className="error-message">{this.state.errors.bidUntilMin}</p>
               </div>
             </div>
             <div className="option">
@@ -254,6 +275,7 @@ Settings.propTypes = {
     maxCard: PropTypes.string,
     autoStop: PropTypes.string,
     snipeOnly: PropTypes.bool,
+    bidUntilMin: PropTypes.string,
     skipTutorial: PropTypes.bool,
     autoUpdate: PropTypes.bool,
     buy: PropTypes.string,
