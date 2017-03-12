@@ -94,7 +94,7 @@ export function snipe(player, settings) {
     }
     dispatch(addMessage('log', `${binResponse.auctionInfo.length} BIN found for ${player.name}...`));
     // drop RPM for sniping
-    api = getApi(state.account.email, 60);
+    api = getApi(state.account.email, settings.rpm > 20 ? settings.rpm : 20);
     for (const trade of binResponse.auctionInfo) {
       // refresh state every trade
       state = getState();
