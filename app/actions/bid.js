@@ -88,6 +88,8 @@ export function snipe(player, settings) {
     let binResponse;
     try {
       binResponse = await api.search(binFilter);
+      // auctionInfo is not always an empty array
+      binResponse.auctionInfo = binResponse.auctionInfo || [];
     } catch (e) {
       dispatch(addMessage('error', `Error searching for BIN on ${player.name}`, e));
       binResponse = { auctionInfo: [] };
@@ -160,6 +162,8 @@ export function placeBid(player, settings) {
       let resultsWithinTimeframe = [];
       try {
         const bidResponse = await api.search(bidFilter);
+        // auctionInfo is not always an empty array
+        bidResponse.auctionInfo = bidResponse.auctionInfo || [];
         searchResults = bidResponse.auctionInfo.length;
         resultsWithinTimeframe = _.filter(
           bidResponse.auctionInfo,
@@ -403,6 +407,8 @@ export function continueTracking(settings) {
       let statuses;
       try {
         statuses = await api.getStatus(tradeIds);
+        // auctionInfo is not always an empty array
+        statuses.auctionInfo = statuses.auctionInfo || [];
         dispatch(setCredits(statuses.credits));
       } catch (e) {
         dispatch(addMessage('error', `Error getting trade statuses: ${JSON.stringify(tradeIds)}`, e));
@@ -563,6 +569,8 @@ export function getTradepile(email) {
     dispatch(addMessage('log', 'Updating tradepile...'));
     const api = getApi(email);
     const response = await api.getTradepile();
+    // auctionInfo is not always an empty array
+    response.auctionInfo = response.auctionInfo || [];
     dispatch(setCredits(response.credits));
     dispatch({ type: types.SET_TRADEPILE, tradepile: response.auctionInfo });
   };
@@ -573,6 +581,8 @@ export function getWatchlist(email) {
     dispatch(addMessage('log', 'Updating watchlist...'));
     const api = getApi(email);
     const response = await api.getWatchlist();
+    // auctionInfo is not always an empty array
+    response.auctionInfo = response.auctionInfo || [];
     dispatch(setCredits(response.credits));
     dispatch(setWatchlist(response.auctionInfo));
   };
