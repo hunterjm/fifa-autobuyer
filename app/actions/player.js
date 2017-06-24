@@ -56,7 +56,6 @@ export function findPrice(id, buy = 0, num = 0) {
       let prices = [];
       const response = await api.search(filter);
       const pr = response.auctionInfo;
-      console.log("prices" + pr)
       if (pr) {
         prices = pr.map(i => i.buyNowPrice)
       }
