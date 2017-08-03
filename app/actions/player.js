@@ -53,8 +53,12 @@ export function findPrice(id, buy = 0, num = 0) {
       }
       let lowest = buy;
       let total = num;
+      let prices = [];
       const response = await api.search(filter);
-      const prices = response.auctionInfo.map(i => i.buyNowPrice);
+      const pr = response.auctionInfo;
+      if (pr) {
+        prices = pr.map(i => i.buyNowPrice);
+      }
       if (prices.length) {
         lowest = Math.min(...prices);
         prices.filter(i => i.buyNowPrice === lowest);
