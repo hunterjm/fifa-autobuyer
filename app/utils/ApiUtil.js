@@ -47,3 +47,7 @@ export function getApi(email, rpm) {
   }
   return login && login.api;
 }
+
+export function clearApiVars(email) {
+  window.localStorage.removeItem(`${email}::apiVars`);
+}
