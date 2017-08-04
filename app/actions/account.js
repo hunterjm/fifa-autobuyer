@@ -1,6 +1,6 @@
 import { push } from 'react-router-redux';
 import * as types from './accountTypes';
-import { init, getApi } from '../utils/ApiUtil';
+import { init, getApi, clearApiVars } from '../utils/ApiUtil';
 import metrics from '../utils/MetricsUtil';
 
 export function setAccountInfo(key, value) {
@@ -59,7 +59,7 @@ export function login(account, tfCb = () => {}, captchaCb = () => {}) {
       }
       dispatch(push('/players'));
     } catch (e) {
-      // this.setState({ twoFactor: false, loading: false, errors: { detail: e.message } });
+      clearApiVars(account.email);
       throw e;
     }
   };
